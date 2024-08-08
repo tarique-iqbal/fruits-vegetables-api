@@ -40,6 +40,11 @@ abstract class DataFixtureTestCase extends KernelTestCase
 
     protected function tearDown(): void
     {
+        $connection = $this->entityManager->getConnection();
+        $platform = $connection->getDatabasePlatform();
+        $connection->executeQuery($platform->getTruncateTableSQL('fruit', true));
+        $connection->executeQuery($platform->getTruncateTableSQL('vegetable', true));
+
         $this->entityManager->close();
 
         parent::tearDown();
