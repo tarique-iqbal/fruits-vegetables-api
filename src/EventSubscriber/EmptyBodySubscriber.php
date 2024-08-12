@@ -23,10 +23,11 @@ class EmptyBodySubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $method = $request->getMethod();
 
-        if (in_array($method, [Request::METHOD_POST, Request::METHOD_PUT]) &&
-            $request->getContentTypeFormat() === 'json' &&
-            strlen($request->getContent()) === 0
-        ) {
+        if (!in_array($method, [Request::METHOD_POST, Request::METHOD_PUT])) {
+            return;
+        }
+
+        if (strlen($request->getContent()) === 0) {
             throw new BadRequestHttpException(
                 'The body of the POST/PUT method cannot be empty.',
                 null,
