@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -69,9 +70,6 @@ class FruitController extends AbstractController
         ]);
     }
 
-    /**
-     * @throws \HttpException
-     */
     #[Route('/fruits/{id}', name: 'fruit_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
     public function deleteFruit(int $id): JsonResponse
     {
@@ -80,8 +78,9 @@ class FruitController extends AbstractController
             ->find($id);
 
         if ($fruit === null) {
-            throw new \HttpException(
+            throw new NotFoundHttpException(
                 sprintf('Fruit does not found. id: %s', $id),
+                null,
                 Response::HTTP_NOT_FOUND
             );
         }

@@ -71,4 +71,14 @@ class FruitControllerTest extends FixtureAwareTestCase
         $this->assertNull($response[0]);
         $this->assertSame(204, $response[1]);
     }
+
+    public function testDeleteFruitNotFound(): void
+    {
+        $url = $this->router->generate('fruit_delete', ['id' => 0]);
+        $this->client->request('DELETE', $url);
+
+        $statusCode = $this->client->getResponse()->getStatusCode();
+
+        $this->assertEquals(404, $statusCode);
+    }
 }
