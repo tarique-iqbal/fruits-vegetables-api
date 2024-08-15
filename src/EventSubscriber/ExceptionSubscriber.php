@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -22,15 +23,20 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function onException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-        $response = new Response();
-        $response->setContent($exception->getMessage());
 
         if ($exception instanceof HttpExceptionInterface) {
-            $response->setStatusCode($exception->getStatusCode());
-            $response->headers->replace($exception->getHeaders());
+            $message = $exception->getMessage();
+            $statusCode = $exception->getStatusCode();
         } else {
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $message = $exception->getMessage();
+            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
+
+        $data = [
+            ['message' => $message],
+            $statusCode
+        ];
+        $response = new JsonResponse($data, $statusCode);
 
         $event->setResponse($response);
     }
