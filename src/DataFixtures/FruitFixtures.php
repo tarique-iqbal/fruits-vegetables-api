@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Fruit;
-use App\Helper\SlugifyHelper;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class FruitFixtures extends Fixture
 {
@@ -36,12 +36,16 @@ class FruitFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $slugifyService = new SlugifyHelper();
+        $asciiSlugger = new AsciiSlugger();
 
         foreach (self::FRUITS as $fruitData) {
             $fruit = new Fruit();
+            $alias = $asciiSlugger->slug($fruitData['name'])
+                ->lower()
+                ->toString();
+
             $fruit->setName($fruitData['name'])
-                ->setAlias($slugifyService->slugify($fruitData['name']))
+                ->setAlias($alias)
                 ->setGram($fruitData['gram']);
             $manager->persist($fruit);
         }

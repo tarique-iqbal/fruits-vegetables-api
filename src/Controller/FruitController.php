@@ -8,7 +8,6 @@ use App\Entity\Fruit;
 use App\Helper\ValidationHelperInterface;
 use App\Repository\FruitRepository;
 use App\Helper\PaginationHelperInterface;
-use App\Helper\SlugifyHelperInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class FruitController extends AbstractController
 {
@@ -30,16 +30,18 @@ class FruitController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         ValidationHelperInterface $validationHelper,
-        SlugifyHelperInterface $slugifyHelper
+        SluggerInterface $asciiSlugger
     ): JsonResponse {
         $fruit = $serializer->deserialize(
             $request->getContent(),
             Fruit::class,
             'json'
         );
-        $fruit->setAlias(
-            $slugifyHelper->slugify($fruit->getName())
-        );
+
+        $alias = $asciiSlugger->slug($fruit->getName())
+            ->lower()
+            ->toString();
+        $fruit->setAlias($alias);
 
         if ($validationHelper->validate($fruit) === false) {
             return $this->json([$validationHelper->getErrorMessages(), Response::HTTP_BAD_REQUEST]);

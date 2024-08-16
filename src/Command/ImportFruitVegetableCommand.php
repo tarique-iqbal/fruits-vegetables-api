@@ -6,13 +6,13 @@ namespace App\Command;
 
 use App\Entity\Fruit;
 use App\Entity\Vegetable;
-use App\Helper\SlugifyHelperInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[AsCommand(name: 'app:import-fruit-vegetable')]
 class ImportFruitVegetableCommand extends Command
@@ -22,7 +22,7 @@ class ImportFruitVegetableCommand extends Command
     public function __construct(
         private readonly string $projectDir,
         private readonly EntityManagerInterface $entityManager,
-        private readonly SlugifyHelperInterface $slugifyService
+        private readonly SluggerInterface $asciiSlugger
     ) {
         parent::__construct();
     }
@@ -54,7 +54,9 @@ class ImportFruitVegetableCommand extends Command
         }
 
         foreach ($fruits as $object) {
-            $alias = $this->slugifyService->slugify($object->name);
+            $alias = $this->asciiSlugger->slug($object->name)
+                ->lower()
+                ->toString();
 
             if ($object->type === 'fruit') {
                 $fruit = $this->entityManager->getRepository(Fruit::class)->findOneBy(['alias' => $alias]);

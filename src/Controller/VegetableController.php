@@ -8,7 +8,6 @@ use App\Entity\Vegetable;
 use App\Helper\ValidationHelperInterface;
 use App\Repository\VegetableRepository;
 use App\Helper\PaginationHelperInterface;
-use App\Helper\SlugifyHelperInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class VegetableController extends AbstractController
 {
@@ -30,16 +30,18 @@ class VegetableController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         ValidationHelperInterface $validationHelper,
-        SlugifyHelperInterface $slugifyService
+        SluggerInterface $asciiSlugger
     ): JsonResponse {
         $vegetable = $serializer->deserialize(
             $request->getContent(),
             Vegetable::class,
             'json'
         );
-        $vegetable->setAlias(
-            $slugifyService->slugify($vegetable->getName())
-        );
+
+        $alias = $asciiSlugger->slug($vegetable->getName())
+            ->lower()
+            ->toString();
+        $vegetable->setAlias($alias);
 
         if ($validationHelper->validate($vegetable) === false) {
             return $this->json([$validationHelper->getErrorMessages(), Response::HTTP_BAD_REQUEST]);
