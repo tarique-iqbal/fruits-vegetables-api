@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Fruit;
-use App\Helper\ValidationHelperInterface;
 use App\Repository\FruitRepository;
 use App\Helper\PaginationHelperInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +16,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class FruitController extends AbstractController
 {
@@ -29,7 +30,7 @@ class FruitController extends AbstractController
     public function postFruit(
         Request $request,
         SerializerInterface $serializer,
-        ValidationHelperInterface $validationHelper,
+        ValidatorInterface $validator,
         SluggerInterface $asciiSlugger
     ): JsonResponse {
         $fruit = $serializer->deserialize(
@@ -43,8 +44,9 @@ class FruitController extends AbstractController
             ->toString();
         $fruit->setAlias($alias);
 
-        if ($validationHelper->validate($fruit) === false) {
-            return $this->json([$validationHelper->getErrorMessages(), Response::HTTP_BAD_REQUEST]);
+        $violations = $validator->validate($fruit);
+        if (count($violations) > 0) {
+            throw new ValidationFailedException(null, $violations);
         }
 
         $this->entityManager->persist($fruit);

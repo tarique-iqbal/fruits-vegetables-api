@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Vegetable;
-use App\Helper\ValidationHelperInterface;
 use App\Repository\VegetableRepository;
 use App\Helper\PaginationHelperInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +16,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class VegetableController extends AbstractController
 {
@@ -29,7 +30,7 @@ class VegetableController extends AbstractController
     public function postVegetable(
         Request $request,
         SerializerInterface $serializer,
-        ValidationHelperInterface $validationHelper,
+        ValidatorInterface $validator,
         SluggerInterface $asciiSlugger
     ): JsonResponse {
         $vegetable = $serializer->deserialize(
@@ -43,8 +44,9 @@ class VegetableController extends AbstractController
             ->toString();
         $vegetable->setAlias($alias);
 
-        if ($validationHelper->validate($vegetable) === false) {
-            return $this->json([$validationHelper->getErrorMessages(), Response::HTTP_BAD_REQUEST]);
+        $violations = $validator->validate($vegetable);
+        if (count($violations) > 0) {
+            throw new ValidationFailedException(null, $violations);
         }
 
         $this->entityManager->persist($vegetable);

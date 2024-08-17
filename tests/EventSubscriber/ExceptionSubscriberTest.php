@@ -24,7 +24,7 @@ class ExceptionSubscriberTest extends KernelTestCase
             (new \Exception('Internal Server Error!'))
         );
 
-        (new ExceptionSubscriber())->onException($event);
+        (new ExceptionSubscriber())->onKernelException($event);
         $response = $event->getResponse();
 
         $this->assertSame(500, $response->getStatusCode());
