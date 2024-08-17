@@ -6,7 +6,6 @@ namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -29,9 +28,7 @@ class EmptyBodySubscriber implements EventSubscriberInterface
 
         if (strlen($request->getContent()) === 0) {
             throw new BadRequestHttpException(
-                'The body of the POST/PUT method cannot be empty.',
-                null,
-                Response::HTTP_BAD_REQUEST
+                'The body of the POST/PUT method cannot be empty.'
             );
         }
     }

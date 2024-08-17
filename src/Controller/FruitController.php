@@ -83,9 +83,7 @@ class FruitController extends AbstractController
 
         if ($fruit === null) {
             throw new NotFoundHttpException(
-                sprintf('Fruit does not found. id: %s', $id),
-                null,
-                Response::HTTP_NOT_FOUND
+                sprintf('Fruit does not found. id: %s', $id)
             );
         }
 

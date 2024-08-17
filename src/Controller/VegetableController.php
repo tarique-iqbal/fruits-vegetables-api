@@ -83,9 +83,7 @@ class VegetableController extends AbstractController
 
         if ($vegetable === null) {
             throw new NotFoundHttpException(
-                sprintf('Vegetable does not found. id: %s', $id),
-                null,
-                Response::HTTP_NOT_FOUND
+                sprintf('Vegetable does not found. id: %s', $id)
             );
         }
 
