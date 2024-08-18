@@ -52,7 +52,7 @@ class FruitController extends AbstractController
         $this->entityManager->persist($fruit);
         $this->entityManager->flush();
 
-        return $this->json([$fruit, Response::HTTP_CREATED]);
+        return $this->json($fruit, Response::HTTP_CREATED);
     }
 
     #[Route('/fruits/{page}', name: 'fruit_list', requirements: ['page' => '\d+'], methods: ['GET'])]
@@ -65,13 +65,13 @@ class FruitController extends AbstractController
         $pager = $paginationService->paginate($query, $page);
         $fruits = $fruitRepository->getPaginatedResultFromQuery($query, $pager->offset, $pager->limit);
 
-        return $this->json([
+        return $this->json(
             [
                 'fruits' => $fruits,
                 'pager' => $pager
             ],
             Response::HTTP_OK
-        ]);
+        );
     }
 
     #[Route('/fruits/{id}', name: 'fruit_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
@@ -90,6 +90,6 @@ class FruitController extends AbstractController
         $this->entityManager->remove($fruit);
         $this->entityManager->flush();
 
-        return $this->json([null, Response::HTTP_NO_CONTENT]);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

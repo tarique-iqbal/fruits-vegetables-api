@@ -7,6 +7,7 @@ namespace App\Tests\EventSubscriber;
 use App\EventSubscriber\ExceptionSubscriber;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
@@ -27,7 +28,7 @@ class ExceptionSubscriberTest extends KernelTestCase
         (new ExceptionSubscriber())->onKernelException($event);
         $response = $event->getResponse();
 
-        $this->assertSame(500, $response->getStatusCode());
-        $this->assertSame('[{"message":"Internal Server Error!"},500]', $response->getContent());
+        $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        $this->assertSame('["Internal Server Error!"]', $response->getContent());
     }
 }

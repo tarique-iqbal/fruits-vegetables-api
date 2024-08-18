@@ -6,6 +6,7 @@ namespace App\Tests\Controller;
 
 use App\Tests\FixtureTestCase\FixtureAwareTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 class VegetableControllerTest extends FixtureAwareTestCase
@@ -31,15 +32,13 @@ class VegetableControllerTest extends FixtureAwareTestCase
         );
 
         $statusCode = $this->client->getResponse()->getStatusCode();
-        $response = json_decode($this->client->getResponse()->getContent());
-        $fruit = $response[0];
+        $vegetable = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertSame(200, $statusCode);
-        $this->assertObjectHasProperty('name', $fruit);
-        $this->assertObjectHasProperty('alias', $fruit);
-        $this->assertObjectHasProperty('gram', $fruit);
-        $this->assertObjectHasProperty('dateTimeAdded', $fruit);
-        $this->assertSame(201, $response[1]);
+        $this->assertEquals(Response::HTTP_CREATED, $statusCode);
+        $this->assertObjectHasProperty('name', $vegetable);
+        $this->assertObjectHasProperty('alias', $vegetable);
+        $this->assertObjectHasProperty('gram', $vegetable);
+        $this->assertObjectHasProperty('dateTimeAdded', $vegetable);
     }
 
     public function testGetVegetable(): void
@@ -49,14 +48,13 @@ class VegetableControllerTest extends FixtureAwareTestCase
 
         $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
-        $fruit = $response[0]->vegetables[0];
+        $vegetable = $response->vegetables[0];
 
-        $this->assertSame(200, $statusCode);
-        $this->assertObjectHasProperty('name', $fruit);
-        $this->assertObjectHasProperty('alias', $fruit);
-        $this->assertObjectHasProperty('gram', $fruit);
-        $this->assertObjectHasProperty('dateTimeAdded', $fruit);
-        $this->assertSame(200, $response[1]);
+        $this->assertEquals(Response::HTTP_OK, $statusCode);
+        $this->assertObjectHasProperty('name', $vegetable);
+        $this->assertObjectHasProperty('alias', $vegetable);
+        $this->assertObjectHasProperty('gram', $vegetable);
+        $this->assertObjectHasProperty('dateTimeAdded', $vegetable);
     }
 
     public function testDeleteVegetable(): void
@@ -67,9 +65,8 @@ class VegetableControllerTest extends FixtureAwareTestCase
         $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertSame(200, $statusCode);
-        $this->assertNull($response[0]);
-        $this->assertSame(204, $response[1]);
+        $this->assertSame(Response::HTTP_NO_CONTENT, $statusCode);
+        $this->assertNull($response);
     }
 
     public function testDeleteVegetableNotFound(): void
@@ -79,6 +76,6 @@ class VegetableControllerTest extends FixtureAwareTestCase
 
         $statusCode = $this->client->getResponse()->getStatusCode();
 
-        $this->assertEquals(404, $statusCode);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $statusCode);
     }
 }

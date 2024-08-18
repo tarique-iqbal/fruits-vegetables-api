@@ -52,7 +52,7 @@ class VegetableController extends AbstractController
         $this->entityManager->persist($vegetable);
         $this->entityManager->flush();
 
-        return $this->json([$vegetable, Response::HTTP_CREATED]);
+        return $this->json($vegetable, Response::HTTP_CREATED);
     }
 
     #[Route('/vegetables/{page}', name: 'vegetable_list', requirements: ['page' => '\d+'], methods: ['GET'])]
@@ -65,13 +65,13 @@ class VegetableController extends AbstractController
         $pager = $paginationService->paginate($query, $page);
         $vegetables = $vegetableRepository->getPaginatedResultFromQuery($query, $pager->offset, $pager->limit);
 
-        return $this->json([
+        return $this->json(
             [
                 'vegetables' => $vegetables,
                 'pager' => $pager
             ],
             Response::HTTP_OK
-        ]);
+        );
     }
 
     #[Route('/vegetables/{id}', name: 'vegetable_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
@@ -90,6 +90,6 @@ class VegetableController extends AbstractController
         $this->entityManager->remove($vegetable);
         $this->entityManager->flush();
 
-        return $this->json([null, Response::HTTP_NO_CONTENT]);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

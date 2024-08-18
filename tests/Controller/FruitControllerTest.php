@@ -6,6 +6,7 @@ namespace App\Tests\Controller;
 
 use App\Tests\FixtureTestCase\FixtureAwareTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 class FruitControllerTest extends FixtureAwareTestCase
@@ -31,15 +32,13 @@ class FruitControllerTest extends FixtureAwareTestCase
         );
 
         $statusCode = $this->client->getResponse()->getStatusCode();
-        $response = json_decode($this->client->getResponse()->getContent());
-        $fruit = $response[0];
+        $fruit = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals(200, $statusCode);
+        $this->assertEquals(Response::HTTP_CREATED, $statusCode);
         $this->assertObjectHasProperty('name', $fruit);
         $this->assertObjectHasProperty('alias', $fruit);
         $this->assertObjectHasProperty('gram', $fruit);
         $this->assertObjectHasProperty('dateTimeAdded', $fruit);
-        $this->assertSame(201, $response[1]);
     }
 
     public function testGetFruits(): void
@@ -49,14 +48,13 @@ class FruitControllerTest extends FixtureAwareTestCase
 
         $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
-        $fruit = $response[0]->fruits[0];
+        $fruit = $response->fruits[0];
 
-        $this->assertEquals(200, $statusCode);
+        $this->assertEquals(Response::HTTP_OK, $statusCode);
         $this->assertObjectHasProperty('name', $fruit);
         $this->assertObjectHasProperty('alias', $fruit);
         $this->assertObjectHasProperty('gram', $fruit);
         $this->assertObjectHasProperty('dateTimeAdded', $fruit);
-        $this->assertSame(200, $response[1]);
     }
 
     public function testDeleteFruit(): void
@@ -67,9 +65,8 @@ class FruitControllerTest extends FixtureAwareTestCase
         $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals(200, $statusCode);
-        $this->assertNull($response[0]);
-        $this->assertSame(204, $response[1]);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $statusCode);
+        $this->assertNull($response);
     }
 
     public function testDeleteFruitNotFound(): void
@@ -79,6 +76,6 @@ class FruitControllerTest extends FixtureAwareTestCase
 
         $statusCode = $this->client->getResponse()->getStatusCode();
 
-        $this->assertEquals(404, $statusCode);
+        $this->assertEquals(Response::HTTP_NOT_FOUND, $statusCode);
     }
 }
