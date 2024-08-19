@@ -28,6 +28,11 @@ class Vegetable
         minMessage: 'Vegetable name must be at least {{ limit }} characters long.',
         maxMessage: 'Vegetable name can not be longer than {{ limit }} characters.',
     )]
+    #[Assert\Regex(
+        pattern: "/[\^<,@\/\{\}\(\)\[\]\!\&\\\`\'\~\*\$%\?=>:\|;#0-9\x22]+/i",
+        message: "Special characters are not allowed in Vegetable name.",
+        match: false
+    )]
     #[ORM\Column(type: Types::STRING, length: 64)]
     private string $name;
 
@@ -36,6 +41,7 @@ class Vegetable
 
     #[Assert\NotNull]
     #[Assert\NotBlank]
+    #[Assert\GreaterThan(0)]
     #[ORM\Column(type: Types::INTEGER, options: ['unsigned' => true])]
     private int $gram;
 
