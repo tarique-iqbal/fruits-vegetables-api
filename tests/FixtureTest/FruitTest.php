@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\FixtureTestCase;
+namespace App\Tests\FixtureTest;
 
 use App\Entity\Fruit;
 
