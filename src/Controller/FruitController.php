@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Entity\Fruit;
 use App\Repository\FruitRepository;
 use App\Helper\PaginationHelperInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class FruitController extends AbstractController
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly FruitRepository $fruitRepository
     ) {
     }
 
@@ -49,21 +48,19 @@ class FruitController extends AbstractController
             throw new ValidationFailedException(null, $violations);
         }
 
-        $this->entityManager->persist($fruit);
-        $this->entityManager->flush();
+        $this->fruitRepository->add($fruit);
 
         return $this->json($fruit, Response::HTTP_CREATED);
     }
 
     #[Route('/fruits/{page}', name: 'fruit_list', requirements: ['page' => '\d+'], methods: ['GET'])]
     public function getFruits(
-        FruitRepository $fruitRepository,
         PaginationHelperInterface $paginationService,
         int $page = 1
     ): JsonResponse {
-        $query = $fruitRepository->getQuery();
+        $query = $this->fruitRepository->getQuery();
         $pager = $paginationService->paginate($query, $page);
-        $fruits = $fruitRepository->getPaginatedResultFromQuery($query, $pager->offset, $pager->limit);
+        $fruits = $this->fruitRepository->getPaginatedResultFromQuery($query, $pager->offset, $pager->limit);
 
         return $this->json(
             [
@@ -77,9 +74,7 @@ class FruitController extends AbstractController
     #[Route('/fruits/{id}', name: 'fruit_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
     public function deleteFruit(int $id): JsonResponse
     {
-        $fruit = $this->entityManager
-            ->getRepository(Fruit::class)
-            ->find($id);
+        $fruit = $this->fruitRepository->find($id);
 
         if ($fruit === null) {
             throw new NotFoundHttpException(
@@ -87,8 +82,7 @@ class FruitController extends AbstractController
             );
         }
 
-        $this->entityManager->remove($fruit);
-        $this->entityManager->flush();
+        $this->fruitRepository->remove($fruit);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

@@ -19,6 +19,18 @@ class VegetableRepository extends ServiceEntityRepository
         parent::__construct($registry, Vegetable::class);
     }
 
+    public function add(Vegetable $vegetable): void
+    {
+        $this->getEntityManager()->persist($vegetable);
+        $this->getEntityManager()->flush();
+    }
+
+    public function remove(Vegetable $vegetable): void
+    {
+        $this->getEntityManager()->remove($vegetable);
+        $this->getEntityManager()->flush();
+    }
+
     public function getQuery(): Query
     {
         return $this->createQueryBuilder('v')

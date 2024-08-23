@@ -19,6 +19,18 @@ class FruitRepository extends ServiceEntityRepository
         parent::__construct($registry, Fruit::class);
     }
 
+    public function add(Fruit $fruit): void
+    {
+        $this->getEntityManager()->persist($fruit);
+        $this->getEntityManager()->flush();
+    }
+
+    public function remove(Fruit $fruit): void
+    {
+        $this->getEntityManager()->remove($fruit);
+        $this->getEntityManager()->flush();
+    }
+
     public function getQuery(): Query
     {
         return $this->createQueryBuilder('f')
