@@ -38,7 +38,7 @@ class VegetableRepository extends ServiceEntityRepository
             ->getQuery();
     }
 
-    public function getPaginatedResultFromQuery(Query $query, int $offset, int $limit)
+    public function getPaginatedResult(Query $query, int $offset, int $limit)
     {
         return $query->setFirstResult($offset)
             ->setMaxResults($limit)

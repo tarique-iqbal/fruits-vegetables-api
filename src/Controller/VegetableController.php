@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Vegetable;
+use App\Helper\PaginationHelper;
 use App\Repository\VegetableRepository;
-use App\Helper\PaginationHelperInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,13 +54,11 @@ class VegetableController extends AbstractController
     }
 
     #[Route('/vegetables/{page}', name: 'vegetable_list', requirements: ['page' => '\d+'], methods: ['GET'])]
-    public function getVegetables(
-        PaginationHelperInterface $paginationService,
-        int $page = 1
-    ): JsonResponse {
+    public function getVegetables(int $page = 1): JsonResponse
+    {
         $query = $this->vegetableRepository->getQuery();
-        $pager = $paginationService->paginate($query, $page);
-        $vegetables = $this->vegetableRepository->getPaginatedResultFromQuery($query, $pager->offset, $pager->limit);
+        $pager = (new PaginationHelper($query))->paginate($page);
+        $vegetables = $this->vegetableRepository->getPaginatedResult($query, $pager->offset, $pager->limit);
 
         return $this->json(
             [

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Fruit;
+use App\Helper\PaginationHelper;
 use App\Repository\FruitRepository;
-use App\Helper\PaginationHelperInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,13 +54,11 @@ class FruitController extends AbstractController
     }
 
     #[Route('/fruits/{page}', name: 'fruit_list', requirements: ['page' => '\d+'], methods: ['GET'])]
-    public function getFruits(
-        PaginationHelperInterface $paginationService,
-        int $page = 1
-    ): JsonResponse {
+    public function getFruits(int $page = 1): JsonResponse
+    {
         $query = $this->fruitRepository->getQuery();
-        $pager = $paginationService->paginate($query, $page);
-        $fruits = $this->fruitRepository->getPaginatedResultFromQuery($query, $pager->offset, $pager->limit);
+        $pager = (new PaginationHelper($query))->paginate($page);
+        $fruits = $this->fruitRepository->getPaginatedResult($query, $pager->offset, $pager->limit);
 
         return $this->json(
             [
