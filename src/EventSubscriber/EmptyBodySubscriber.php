@@ -28,7 +28,7 @@ class EmptyBodySubscriber implements EventSubscriberInterface
 
         if (strlen($request->getContent()) === 0) {
             throw new BadRequestHttpException(
-                'The body of the POST/PUT method cannot be empty.'
+                sprintf('The body of the %s method cannot be empty.', $method)
             );
         }
     }
