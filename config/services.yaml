@@ -24,3 +24,13 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Provider\UnitProcessorServiceProvider:
+        arguments:
+            - !tagged 'unit_processor'
+            - '@logger'
+
+    App\Service\UnitProcessor\FruitProcessorService:
+        tags: ['unit_processor']
+
+    App\Service\UnitProcessor\VegetableProcessorService:
+        tags: ['unit_processor']

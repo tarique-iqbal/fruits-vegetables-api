@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Entity\Fruit;
-use App\Entity\Vegetable;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Provider\UnitProcessorServiceProvider;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[AsCommand(name: 'app:import-fruit-vegetable')]
 class ImportFruitVegetableCommand extends Command
@@ -21,8 +18,7 @@ class ImportFruitVegetableCommand extends Command
 
     public function __construct(
         private readonly string $projectDir,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly SluggerInterface $asciiSlugger
+        private readonly UnitProcessorServiceProvider $unitProcessorProvider
     ) {
         parent::__construct();
     }
@@ -36,16 +32,16 @@ class ImportFruitVegetableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Start command: ' . $this->getName());
-        $file = $input->getArgument('file');
-        $filePath = $this->projectDir . '/' . $file;
 
-        if ($this->validateFile($filePath) === false) {
+        $file = $this->projectDir . '/' . $input->getArgument('file');
+
+        if ($this->validateFile($file) === false) {
             $output->writeln($this->getMessage());
 
             return self::FAILURE;
         }
 
-        $fruits = json_decode(file_get_contents($filePath));
+        $fruitsVegetables = json_decode(file_get_contents($file));
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $output->writeln('Error: ' . json_last_error_msg());
@@ -53,52 +49,21 @@ class ImportFruitVegetableCommand extends Command
             return self::FAILURE;
         }
 
-        foreach ($fruits as $object) {
-            $alias = $this->asciiSlugger->slug($object->name)
-                ->lower()
-                ->toString();
+        foreach ($fruitsVegetables as $object) {
+            $status = $this->unitProcessorProvider
+                ->get($object->type)
+                ?->process($object);
 
-            if ($object->type === 'fruit') {
-                $fruit = $this->entityManager->getRepository(Fruit::class)->findOneBy(['alias' => $alias]);
-                if ($fruit === null) {
-                    $output->writeln('Adding fruit: ' . $object->name);
-                    $this->persistFruit($object, $alias);
-                }
-            } elseif ($object->type === 'vegetable') {
-                $vegetable = $this->entityManager->getRepository(Vegetable::class)->findOneBy(['alias' => $alias]);
-                if ($vegetable === null) {
-                    $output->writeln('Adding vegetable: ' . $object->name);
-                    $this->persistVegetable($object, $alias);
-                }
+            if ($status === true) {
+                $output->writeln(
+                    sprintf('Adding %s: %s', $object->type, $object->name)
+                );
             }
         }
-        $this->entityManager->flush();
 
         $output->writeln('Exit command: ' . $this->getName());
 
         return Command::SUCCESS;
-    }
-
-    private function persistFruit(\stdClass $object, string $alias): void
-    {
-        $gram = $object->unit === 'kg' ? $object->quantity * 1000 : $object->quantity;
-
-        $fruit = new Fruit();
-        $fruit->setName($object->name)
-            ->setAlias($alias)
-            ->setGram($gram);
-        $this->entityManager->persist($fruit);
-    }
-
-    private function persistVegetable(\stdClass $object, string $alias): void
-    {
-        $gram = $object->unit === 'kg' ? $object->quantity * 1000 : $object->quantity;
-
-        $vegetable = new Vegetable();
-        $vegetable->setName($object->name)
-            ->setAlias($alias)
-            ->setGram($gram);
-        $this->entityManager->persist($vegetable);
     }
 
     private function validateFile(string $filePath): bool
