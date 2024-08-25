@@ -7,6 +7,7 @@ namespace App\Tests\Command;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Webmozart\Assert\InvalidArgumentException;
 
 class ImportFruitVegetableCommandTest extends KernelTestCase
 {
@@ -32,9 +33,8 @@ class ImportFruitVegetableCommandTest extends KernelTestCase
 
     public function testExecuteFileNotFound(): void
     {
-        $this->commandTester->execute(['file' => 'tests/data/fake.json']);
-        $output = $this->commandTester->getDisplay();
+        $this->expectException(InvalidArgumentException::class);
 
-        $this->assertStringContainsString('File not found:', $output);
+        $this->commandTester->execute(['file' => 'tests/data/fake.json']);
     }
 }
