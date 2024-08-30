@@ -20,7 +20,6 @@ class Fruit
     #[ORM\Column(type: Types::INTEGER, options: ['unsigned' => true])]
     private int $id;
 
-    #[Assert\NotNull]
     #[Assert\NotBlank]
     #[Assert\Length(
         min: 2,
@@ -39,7 +38,6 @@ class Fruit
     #[ORM\Column(type: Types::STRING, length: 64, unique: true)]
     private string $alias;
 
-    #[Assert\NotNull]
     #[Assert\NotBlank]
     #[Assert\GreaterThan(0)]
     #[ORM\Column(type: Types::INTEGER, options: ['unsigned' => true])]

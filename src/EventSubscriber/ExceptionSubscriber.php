@@ -27,18 +27,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception instanceof ValidationFailedException) {
-            $violations = $exception->getViolations();
-            $messages = $this->getErrorMessage($violations);
+            $message = $this->getErrorMessage($exception->getViolations());
             $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
         } elseif ($exception instanceof HttpExceptionInterface) {
-            $messages = ['error' => $exception->getMessage()];
+            $message = ['error' => $exception->getMessage()];
             $statusCode = $exception->getStatusCode();
         } else {
-            $messages = ['error' => $exception->getMessage()];
+            $message = ['error' => $exception->getMessage()];
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
 
-        $response = new JsonResponse($messages, $statusCode);
+        $response = new JsonResponse($message, $statusCode);
 
         $event->setResponse($response);
     }
