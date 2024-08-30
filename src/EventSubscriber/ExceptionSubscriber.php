@@ -31,10 +31,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
             $messages = $this->getErrorMessage($violations);
             $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
         } elseif ($exception instanceof HttpExceptionInterface) {
-            $messages = [$exception->getMessage()];
+            $messages = ['error' => $exception->getMessage()];
             $statusCode = $exception->getStatusCode();
         } else {
-            $messages = [$exception->getMessage()];
+            $messages = ['error' => $exception->getMessage()];
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
 

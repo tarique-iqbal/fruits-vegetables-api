@@ -66,7 +66,7 @@ class FruitControllerTest extends FixtureAwareTestCase
         $response = json_decode($this->client->getResponse()->getContent());
 
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $statusCode);
-        $this->assertStringContainsString('99', $response[0]);
+        $this->assertStringContainsString('99', $response->error);
     }
 
     public function testDeleteFruit(): void

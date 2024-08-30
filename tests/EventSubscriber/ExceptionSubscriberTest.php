@@ -29,6 +29,6 @@ class ExceptionSubscriberTest extends KernelTestCase
         $response = $event->getResponse();
 
         $this->assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
-        $this->assertSame('["Internal Server Error!"]', $response->getContent());
+        $this->assertSame('{"error":"Internal Server Error!"}', $response->getContent());
     }
 }
