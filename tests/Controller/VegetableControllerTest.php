@@ -41,6 +41,23 @@ class VegetableControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('dateTimeAdded', $vegetable);
     }
 
+    public function testPostVegetableInvalidInput(): void
+    {
+        $url = $this->router->generate('vegetable_add');
+        $this->client->request(
+            'POST',
+            uri: $url,
+            content: '{"name": "","gram": 0}'
+        );
+
+        $statusCode = $this->client->getResponse()->getStatusCode();
+        $errors = json_decode($this->client->getResponse()->getContent());
+
+        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $statusCode);
+        $this->assertCount(3, $errors);
+        $this->assertContainsOnlyInstancesOf(\stdClass::class, $errors);
+    }
+
     public function testGetVegetables(): void
     {
         $url = $this->router->generate('vegetable_list');
