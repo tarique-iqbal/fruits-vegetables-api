@@ -1,7 +1,7 @@
 # 🍎 Fruits and 🥕 Vegetables
 
 ## 🎯 Goal
-We want to build a service which will take a `request.json` sample file location: `tests/data/request.json` and:
+We want to build a service which will take a `request.json` sample file location: `data/request.json` and:
 - Process the file and create two separate collections for `Fruits` and `Vegetables`
 - Each collection has methods like `add()`, `remove()`, `list()`;
 - Units have to be stored as grams;
