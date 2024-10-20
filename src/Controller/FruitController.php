@@ -4,35 +4,48 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\Request\FruitDto;
+use App\Mapper\MapperInterface;
 use App\Service\FruitServiceInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class FruitController extends AbstractController
+final class FruitController extends AbstractApiController
 {
     public function __construct(
         private readonly FruitServiceInterface $fruitService,
+        SerializerInterface $serializer,
+        SluggerInterface $asciiSlugger
     ) {
+        parent::__construct($serializer, $asciiSlugger);
+    }
+
+    protected function getDtoClassName(): string
+    {
+        return FruitDto::class;
     }
 
     #[Route('/fruits', name: 'fruit_add', methods: ['POST'])]
     public function postFruit(
         Request $request,
         ValidatorInterface $validator,
+        MapperInterface $fruitMapper,
     ): JsonResponse {
-        $jsonData = $request->getContent();
-        $fruit = $this->fruitService->deserializeInput($jsonData);
+        $fruitDto = $this->loadDto($request);
 
-        $violations = $validator->validate($fruit);
+        $violations = $validator->validate($fruitDto);
         if (count($violations) > 0) {
             throw new ValidationFailedException(null, $violations);
         }
+
+        $fruit = $fruitMapper->mapToEntity($fruitDto);
 
         $this->fruitService->addFruit($fruit);
 

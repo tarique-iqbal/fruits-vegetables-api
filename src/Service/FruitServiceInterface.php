@@ -14,7 +14,5 @@ interface FruitServiceInterface
 
     public function findById(int $id): Fruit|null;
 
-    public function deserializeInput(string $jsonData): Fruit;
-
     public function getPaginatedFruits(int $page): array;
 }

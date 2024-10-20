@@ -24,14 +24,6 @@ class FruitServiceTest extends KernelTestCase
         $this->fruitService = $container->get(FruitService::class);
     }
 
-    public function testDeserializeInput(): void
-    {
-        $jsonData = '{"name": "Kiwi","gram": 10000}';
-        $fruit = $this->fruitService->deserializeInput($jsonData);
-
-        $this->assertInstanceOf(Fruit::class, $fruit);
-    }
-
     public function testGetPaginatedFruits(): void
     {
         $result = $this->fruitService->getPaginatedFruits(1);

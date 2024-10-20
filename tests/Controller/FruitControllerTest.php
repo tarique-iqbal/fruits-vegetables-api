@@ -28,7 +28,7 @@ class FruitControllerTest extends FixtureAwareTestCase
         $this->client->request(
             'POST',
             uri: $url,
-            content: '{"name": "Kiwi","gram": 10000}'
+            content: '{"name": "Kiwi","type": "fruit","quantity": 10,"unit": "kg"}'
         );
 
         $statusCode = $this->client->getResponse()->getStatusCode();
@@ -47,14 +47,14 @@ class FruitControllerTest extends FixtureAwareTestCase
         $this->client->request(
             'POST',
             uri: $url,
-            content: '{"name": "","gram": 0}'
+            content: '{"name": "","type": "fruit","quantity": 0,"unit": "lb"}'
         );
 
         $statusCode = $this->client->getResponse()->getStatusCode();
         $errors = json_decode($this->client->getResponse()->getContent());
 
         $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $statusCode);
-        $this->assertCount(3, $errors);
+        $this->assertCount(5, $errors);
         $this->assertContainsOnlyInstancesOf(\stdClass::class, $errors);
     }
 
