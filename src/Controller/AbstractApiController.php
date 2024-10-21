@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Dto\Request\FruitDto;
+use App\Dto\Request\VegetableDto;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -20,7 +21,7 @@ abstract class AbstractApiController extends AbstractController
 
     abstract protected function getDtoClassName(): string;
 
-    protected function loadDto(Request $request): FruitDto
+    protected function loadDto(Request $request): FruitDto|VegetableDto
     {
         $dto = $this->serializer->deserialize(
             $request->getContent(),

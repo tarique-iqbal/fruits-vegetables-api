@@ -4,35 +4,48 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Dto\Request\VegetableDto;
+use App\Mapper\MapperInterface;
 use App\Service\VegetableServiceInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class VegetableController extends AbstractController
+final class VegetableController extends AbstractApiController
 {
     public function __construct(
         private readonly VegetableServiceInterface $vegetableService,
+        SerializerInterface $serializer,
+        SluggerInterface $asciiSlugger
     ) {
+        parent::__construct($serializer, $asciiSlugger);
+    }
+
+    protected function getDtoClassName(): string
+    {
+        return VegetableDto::class;
     }
 
     #[Route('/vegetables', name: 'vegetable_add', methods: ['POST'])]
     public function postVegetable(
         Request $request,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        MapperInterface $vegetableMapper,
     ): JsonResponse {
-        $jsonData = $request->getContent();
-        $vegetable = $this->vegetableService->deserializeInput($jsonData);
+        $vegetableDto = $this->loadDto($request);
 
-        $violations = $validator->validate($vegetable);
+        $violations = $validator->validate($vegetableDto);
         if (count($violations) > 0) {
             throw new ValidationFailedException(null, $violations);
         }
+
+        $vegetable = $vegetableMapper->mapToEntity($vegetableDto);
 
         $this->vegetableService->addVegetable($vegetable);
 

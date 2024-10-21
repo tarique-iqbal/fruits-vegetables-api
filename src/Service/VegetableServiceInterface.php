@@ -14,7 +14,5 @@ interface VegetableServiceInterface
 
     public function findById(int $id): Vegetable|null;
 
-    public function deserializeInput(string $jsonData): Vegetable;
-
     public function getPaginatedVegetables(int $page): array;
 }

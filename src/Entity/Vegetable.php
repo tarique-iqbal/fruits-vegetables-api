@@ -7,10 +7,7 @@ namespace App\Entity;
 use App\Repository\VegetableRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[UniqueEntity('alias')]
 #[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: VegetableRepository::class)]
 class Vegetable
@@ -20,28 +17,12 @@ class Vegetable
     #[ORM\Column(type: Types::INTEGER, options: ['unsigned' => true])]
     private int $id;
 
-    #[Assert\NotNull]
-    #[Assert\NotBlank]
-    #[Assert\Length(
-        min: 2,
-        max: 64,
-        minMessage: 'Vegetable name must be at least {{ limit }} characters long.',
-        maxMessage: 'Vegetable name can not be longer than {{ limit }} characters.',
-    )]
-    #[Assert\Regex(
-        pattern: "/[\^<,@\/\{\}\(\)\[\]\!\&\\\`\'\~\*\$%\?=>:\|;#0-9\x22]+/i",
-        message: "Special characters are not allowed in Vegetable name.",
-        match: false
-    )]
     #[ORM\Column(type: Types::STRING, length: 64)]
     private string $name;
 
     #[ORM\Column(type: Types::STRING, length: 64, unique: true)]
     private string $alias;
 
-    #[Assert\NotNull]
-    #[Assert\NotBlank]
-    #[Assert\GreaterThan(0)]
     #[ORM\Column(type: Types::INTEGER, options: ['unsigned' => true])]
     private int $gram;
 
@@ -95,7 +76,7 @@ class Vegetable
     }
 
     #[ORM\PrePersist]
-    public function setDateTimeAddedValue(): void
+    public function onPrePersist(): void
     {
         $this->dateTimeAdded = new \DateTimeImmutable();
     }

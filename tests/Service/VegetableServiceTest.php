@@ -24,14 +24,6 @@ class VegetableServiceTest extends KernelTestCase
         $this->vegetableService = $container->get(VegetableService::class);
     }
 
-    public function testDeserializeInput(): void
-    {
-        $jsonData = '{"name": "Cucumber","gram": 8000}';
-        $vegetable = $this->vegetableService->deserializeInput($jsonData);
-
-        $this->assertInstanceOf(Vegetable::class, $vegetable);
-    }
-
     public function testGetPaginatedVegetables(): void
     {
         $result = $this->vegetableService->getPaginatedVegetables(1);

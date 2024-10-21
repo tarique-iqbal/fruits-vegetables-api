@@ -7,15 +7,11 @@ namespace App\Service;
 use App\Entity\Vegetable;
 use App\Helper\PaginationHelper;
 use App\Repository\VegetableRepository;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 final readonly class VegetableService implements VegetableServiceInterface
 {
     public function __construct(
-        private VegetableRepository $vegetableRepository,
-        private SerializerInterface $serializer,
-        private SluggerInterface $asciiSlugger
+        private VegetableRepository $vegetableRepository
     ) {
     }
 
@@ -32,22 +28,6 @@ final readonly class VegetableService implements VegetableServiceInterface
     public function findById(int $id): Vegetable|null
     {
         return $this->vegetableRepository->find($id);
-    }
-
-    public function deserializeInput(string $jsonData): Vegetable
-    {
-        $vegetable = $this->serializer->deserialize(
-            $jsonData,
-            Vegetable::class,
-            'json'
-        );
-
-        $alias = $this->asciiSlugger->slug($vegetable->getName())
-            ->lower()
-            ->toString();
-        $vegetable->setAlias($alias);
-
-        return $vegetable;
     }
 
     public function getPaginatedVegetables(int $page): array
