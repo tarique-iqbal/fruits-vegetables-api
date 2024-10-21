@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Webmozart\Assert\InvalidArgumentException;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
@@ -29,6 +30,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof ValidationFailedException) {
             $message = $this->getErrorMessage($exception->getViolations());
             $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+        } elseif ($exception instanceof InvalidArgumentException) {
+            $message = ['error' => $exception->getMessage()];
+            $statusCode = Response::HTTP_BAD_REQUEST;
         } elseif ($exception instanceof HttpExceptionInterface) {
             $message = ['error' => $exception->getMessage()];
             $statusCode = $exception->getStatusCode();

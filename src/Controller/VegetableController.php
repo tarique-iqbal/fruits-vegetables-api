@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Webmozart\Assert\Assert;
 
 final class VegetableController extends AbstractApiController
 {
@@ -52,10 +53,14 @@ final class VegetableController extends AbstractApiController
         return $this->json($vegetable, Response::HTTP_CREATED);
     }
 
-    #[Route('/vegetables/{page}', name: 'vegetable_list', requirements: ['page' => '\d+'], methods: ['GET'])]
-    public function getVegetables(int $page = 1): JsonResponse
+    #[Route('/vegetables', name: 'vegetable_list', methods: ['GET'])]
+    public function getVegetables(Request $request): JsonResponse
     {
-        $result = $this->vegetableService->getPaginatedVegetables($page);
+        $page = $request->query->get('page', 1);
+
+        Assert::numeric($page, sprintf('Page expected to be numeric. Received: %s', $page));
+
+        $result = $this->vegetableService->getPaginatedVegetables((int) $page);
 
         return $this->json($result, Response::HTTP_OK);
     }

@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Webmozart\Assert\Assert;
 
 final class FruitController extends AbstractApiController
 {
@@ -52,10 +53,14 @@ final class FruitController extends AbstractApiController
         return $this->json($fruit, Response::HTTP_CREATED);
     }
 
-    #[Route('/fruits/{page}', name: 'fruit_list', requirements: ['page' => '\d+'], methods: ['GET'])]
-    public function getFruits(int $page = 1): JsonResponse
+    #[Route('/fruits', name: 'fruit_list', methods: ['GET'])]
+    public function getFruits(Request $request): JsonResponse
     {
-        $result = $this->fruitService->getPaginatedFruits($page);
+        $page = $request->query->get('page', 1);
+
+        Assert::numeric($page, sprintf('Page expected to be numeric. Received: %s', $page));
+
+        $result = $this->fruitService->getPaginatedFruits((int) $page);
 
         return $this->json($result, Response::HTTP_OK);
     }
