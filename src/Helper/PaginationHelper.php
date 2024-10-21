@@ -6,7 +6,7 @@ namespace App\Helper;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PaginationHelper extends Paginator
 {
@@ -29,7 +29,7 @@ class PaginationHelper extends Paginator
         $pager->offset = $pager->limit * ($page-1);
 
         if ($pager->totalPages < $pager->currentPage) {
-            throw new BadRequestHttpException(
+            throw new NotFoundHttpException(
                 sprintf('Invalid page number %d requested.', $page)
             );
         }

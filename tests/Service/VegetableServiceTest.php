@@ -8,7 +8,7 @@ use App\Service\VegetableServiceInterface;
 use App\Tests\DataFixtures\VegetableFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VegetableServiceTest extends KernelTestCase
 {
@@ -32,9 +32,9 @@ class VegetableServiceTest extends KernelTestCase
         $this->assertInstanceOf(\stdClass::class, $result['pager']);
     }
 
-    public function testGetPaginatedVegetablesInvalidPage(): void
+    public function testGetPaginatedVegetablesPageNotFound(): void
     {
-        $this->expectException(BadRequestHttpException::class);
+        $this->expectException(NotFoundHttpException::class);
 
         $this->vegetableService->getPaginatedVegetables(99);
     }

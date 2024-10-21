@@ -74,16 +74,34 @@ class FruitControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('dateTimeAdded', $fruit);
     }
 
-    public function testGetFruitsInvalidPage(): void
+    public static function invalidPageProvider(): array
     {
-        $url = $this->router->generate('fruit_list', ['page' => 99]);
+        return [
+            [
+                99, Response::HTTP_NOT_FOUND
+            ],
+            [
+                '99', Response::HTTP_NOT_FOUND
+            ],
+            [
+                'str2', Response::HTTP_BAD_REQUEST
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidPageProvider
+     */
+    public function testGetFruitsInvalidPage(int|string $page, int $expectedCode): void
+    {
+        $url = $this->router->generate('fruit_list', ['page' => $page]);
         $this->client->request('GET', $url);
 
         $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $statusCode);
-        $this->assertStringContainsString('99', $response->error);
+        $this->assertEquals($expectedCode, $statusCode);
+        $this->assertStringContainsString((string) $page, $response->error);
     }
 
     public function testDeleteFruit(): void

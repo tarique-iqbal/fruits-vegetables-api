@@ -74,16 +74,34 @@ class VegetableControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('dateTimeAdded', $vegetable);
     }
 
-    public function testGetVegetablesInvalidPage(): void
+    public static function invalidPageProvider(): array
     {
-        $url = $this->router->generate('vegetable_list', ['page' => 99]);
+        return [
+            [
+                99, Response::HTTP_NOT_FOUND
+            ],
+            [
+                '99', Response::HTTP_NOT_FOUND
+            ],
+            [
+                'str3', Response::HTTP_BAD_REQUEST
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidPageProvider
+     */
+    public function testGetVegetablesInvalidPage(int|string $page, int $expectedCode): void
+    {
+        $url = $this->router->generate('vegetable_list', ['page' => $page]);
         $this->client->request('GET', $url);
 
         $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals(Response::HTTP_BAD_REQUEST, $statusCode);
-        $this->assertStringContainsString('99', $response->error);
+        $this->assertEquals($expectedCode, $statusCode);
+        $this->assertStringContainsString((string) $page, $response->error);
     }
 
     public function testDeleteVegetable(): void

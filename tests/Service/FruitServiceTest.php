@@ -8,7 +8,7 @@ use App\Service\FruitServiceInterface;
 use App\Tests\DataFixtures\FruitFixtures;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class FruitServiceTest extends KernelTestCase
 {
@@ -32,9 +32,9 @@ class FruitServiceTest extends KernelTestCase
         $this->assertInstanceOf(\stdClass::class, $result['pager']);
     }
 
-    public function testGetPaginatedFruitsInvalidPage(): void
+    public function testGetPaginatedFruitsPageNotFound(): void
     {
-        $this->expectException(BadRequestHttpException::class);
+        $this->expectException(NotFoundHttpException::class);
 
         $this->fruitService->getPaginatedFruits(99);
     }
