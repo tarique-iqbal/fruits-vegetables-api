@@ -34,3 +34,6 @@ services:
 
     App\Service\UnitProcessor\VegetableProcessorService:
         tags: ['unit_processor']
+
+    App\Mapper\MapperInterface $fruitMapper: '@App\Mapper\FruitMapper'
+    App\Mapper\MapperInterface $vegetableMapper: '@App\Mapper\VegetableMapper'
