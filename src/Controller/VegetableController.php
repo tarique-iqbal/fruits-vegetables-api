@@ -54,15 +54,24 @@ final class VegetableController extends AbstractApiController
     }
 
     #[Route('/vegetables', name: 'vegetable_list', methods: ['GET'])]
-    public function getVegetables(Request $request): JsonResponse
-    {
+    public function getVegetables(
+        Request $request,
+        MapperInterface $vegetableMapper,
+    ): JsonResponse {
         $page = $request->query->get('page', 1);
+        $unit = $request->query->get('unit', self::DEFAULT_UNIT);
 
         Assert::numeric($page, sprintf('Page expected to be numeric. Received: %s', $page));
+        Assert::oneOf($unit, self::UNIT_LIST, sprintf('Unit must be one of %s', implode(', ', self::UNIT_LIST)));
 
         $result = $this->vegetableService->getPaginatedVegetables((int) $page);
+        $result['vegetables'] = $vegetableMapper->mapAllToDto($result['vegetables']);
 
-        return $this->json($result, Response::HTTP_OK);
+        return $this->json(
+            data: $result,
+            status: Response::HTTP_OK,
+            context: ['groups' => [$unit, 'list']]
+        );
     }
 
     #[Route('/vegetables/{id}', name: 'vegetable_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]
