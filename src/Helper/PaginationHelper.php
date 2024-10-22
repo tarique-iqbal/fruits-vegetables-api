@@ -17,18 +17,26 @@ class PaginationHelper extends Paginator
         parent::__construct($query);
     }
 
-    public function paginate(int $page): \stdClass
+    public function paginate(int $page): Pager
     {
-        $pager = new \stdClass();
-        $pager->totalItems = $this->count();
-        $pager->totalPages = ceil($pager->totalItems / self::PAGE_SIZE);
-        $pager->currentPage = $page;
-        $pager->previousPage = $page > 1 ? $page - 1 : null;
-        $pager->nextPage = $page < $pager->totalPages ? $page + 1 : null;
-        $pager->limit = self::PAGE_SIZE;
-        $pager->offset = $pager->limit * ($page-1);
+        $pager = new Pager();
+        $pager->setTotalItems($this->count());
+        $pager->setTotalPages(
+            (int) ceil($pager->getTotalItems() / self::PAGE_SIZE)
+        );
+        $pager->setCurrentPage($page);
+        $pager->setPreviousPage(
+            $page > 1 ? $page - 1 : null
+        );
+        $pager->setNextPage(
+            $page < $pager->getTotalPages() ? $page + 1 : null
+        );
+        $pager->setLimit(self::PAGE_SIZE);
+        $pager->setOffset(
+            $pager->getLimit() * ($page-1)
+        );
 
-        if ($pager->totalPages < $pager->currentPage) {
+        if ($pager->getTotalPages() < $pager->getCurrentPage()) {
             throw new NotFoundHttpException(
                 sprintf('Invalid page number %d requested.', $page)
             );

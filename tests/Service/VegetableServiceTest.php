@@ -3,6 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Entity\Vegetable;
+use App\Helper\Pager;
 use App\Service\VegetableService;
 use App\Service\VegetableServiceInterface;
 use App\Tests\DataFixtures\VegetableFixtures;
@@ -29,7 +30,7 @@ class VegetableServiceTest extends KernelTestCase
         $result = $this->vegetableService->getPaginatedVegetables(1);
 
         $this->assertContainsOnlyInstancesOf(Vegetable::class, $result['vegetables']);
-        $this->assertInstanceOf(\stdClass::class, $result['pager']);
+        $this->assertInstanceOf(Pager::class, $result['pager']);
     }
 
     public function testGetPaginatedVegetablesPageNotFound(): void

@@ -3,6 +3,7 @@
 namespace App\Tests\Service;
 
 use App\Entity\Fruit;
+use App\Helper\Pager;
 use App\Service\FruitService;
 use App\Service\FruitServiceInterface;
 use App\Tests\DataFixtures\FruitFixtures;
@@ -29,7 +30,7 @@ class FruitServiceTest extends KernelTestCase
         $result = $this->fruitService->getPaginatedFruits(1);
 
         $this->assertContainsOnlyInstancesOf(Fruit::class, $result['fruits']);
-        $this->assertInstanceOf(\stdClass::class, $result['pager']);
+        $this->assertInstanceOf(Pager::class, $result['pager']);
     }
 
     public function testGetPaginatedFruitsPageNotFound(): void

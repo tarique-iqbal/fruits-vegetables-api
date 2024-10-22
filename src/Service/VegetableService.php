@@ -34,7 +34,7 @@ final readonly class VegetableService implements VegetableServiceInterface
     {
         $query = $this->vegetableRepository->getQuery();
         $pager = (new PaginationHelper($query))->paginate($page);
-        $vegetables = $this->vegetableRepository->getPaginatedResult($query, $pager->offset, $pager->limit);
+        $vegetables = $this->vegetableRepository->getPaginatedResult($query, $pager->getOffset(), $pager->getLimit());
 
         return [
             'vegetables' => $vegetables,

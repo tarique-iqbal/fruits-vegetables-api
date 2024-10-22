@@ -34,7 +34,7 @@ final readonly class FruitService implements FruitServiceInterface
     {
         $query = $this->fruitRepository->getQuery();
         $pager = (new PaginationHelper($query))->paginate($page);
-        $fruits = $this->fruitRepository->getPaginatedResult($query, $pager->offset, $pager->limit);
+        $fruits = $this->fruitRepository->getPaginatedResult($query, $pager->getOffset(), $pager->getLimit());
 
         return [
             'fruits' => $fruits,
