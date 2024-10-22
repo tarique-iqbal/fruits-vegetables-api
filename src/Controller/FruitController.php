@@ -54,15 +54,24 @@ final class FruitController extends AbstractApiController
     }
 
     #[Route('/fruits', name: 'fruit_list', methods: ['GET'])]
-    public function getFruits(Request $request): JsonResponse
-    {
+    public function getFruits(
+        Request $request,
+        MapperInterface $fruitMapper,
+    ): JsonResponse {
         $page = $request->query->get('page', 1);
+        $unit = $request->query->get('unit', self::DEFAULT_UNIT);
 
         Assert::numeric($page, sprintf('Page expected to be numeric. Received: %s', $page));
+        Assert::oneOf($unit, self::UNIT_LIST, sprintf('Unit must be one of %s', implode(', ', self::UNIT_LIST)));
 
         $result = $this->fruitService->getPaginatedFruits((int) $page);
+        $result['fruits'] = $fruitMapper->mapAllToDto($result['fruits']);
 
-        return $this->json($result, Response::HTTP_OK);
+        return $this->json(
+            data: $result,
+            status: Response::HTTP_OK,
+            context: ['groups' => [$unit, 'list']]
+        );
     }
 
     #[Route('/fruits/{id}', name: 'fruit_delete', requirements: ['id' => '\d+'], methods: ['DELETE'])]

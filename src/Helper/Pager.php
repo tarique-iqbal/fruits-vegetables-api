@@ -33,7 +33,7 @@ class Pager
         $this->currentPage = $currentPage;
     }
 
-    public function getPreviousPage(): int
+    public function getPreviousPage(): ?int
     {
         return $this->previousPage;
     }
@@ -43,7 +43,7 @@ class Pager
         $this->previousPage = $previousPage;
     }
 
-    public function getNextPage(): int
+    public function getNextPage(): ?int
     {
         return $this->nextPage;
     }
