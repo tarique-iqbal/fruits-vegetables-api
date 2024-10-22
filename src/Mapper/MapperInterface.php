@@ -10,4 +10,6 @@ use App\Entity\Vegetable;
 interface MapperInterface
 {
     public function mapToEntity(object $dto): Fruit|Vegetable;
+
+    public function mapAllToDto(array $entities): array;
 }
