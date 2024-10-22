@@ -27,7 +27,7 @@ class Vegetable
     private int $gram;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, options: ['notnull' => true])]
-    private \DateTimeInterface $dateTimeAdded;
+    private \DateTimeInterface $createdAt;
 
     public function getId(): int
     {
@@ -70,14 +70,14 @@ class Vegetable
         return $this;
     }
 
-    public function getDateTimeAdded(): \DateTimeInterface
+    public function getCreatedAt(): \DateTimeInterface
     {
-        return $this->dateTimeAdded;
+        return $this->createdAt;
     }
 
     #[ORM\PrePersist]
     public function onPrePersist(): void
     {
-        $this->dateTimeAdded = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
     }
 }

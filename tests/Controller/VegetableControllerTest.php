@@ -38,7 +38,7 @@ class VegetableControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('name', $vegetable);
         $this->assertObjectHasProperty('alias', $vegetable);
         $this->assertObjectHasProperty('gram', $vegetable);
-        $this->assertObjectHasProperty('dateTimeAdded', $vegetable);
+        $this->assertObjectHasProperty('createdAt', $vegetable);
     }
 
     public function testPostVegetableInvalidInput(): void
@@ -71,7 +71,7 @@ class VegetableControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('name', $vegetable);
         $this->assertObjectHasProperty('alias', $vegetable);
         $this->assertObjectHasProperty('gram', $vegetable);
-        $this->assertObjectHasProperty('dateTimeAdded', $vegetable);
+        $this->assertObjectHasProperty('createdAt', $vegetable);
     }
 
     public static function invalidPageProvider(): array

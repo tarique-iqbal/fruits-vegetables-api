@@ -38,7 +38,7 @@ class FruitControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('name', $fruit);
         $this->assertObjectHasProperty('alias', $fruit);
         $this->assertObjectHasProperty('gram', $fruit);
-        $this->assertObjectHasProperty('dateTimeAdded', $fruit);
+        $this->assertObjectHasProperty('createdAt', $fruit);
     }
 
     public function testPostFruitInvalidInput(): void
@@ -71,7 +71,7 @@ class FruitControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('name', $fruit);
         $this->assertObjectHasProperty('alias', $fruit);
         $this->assertObjectHasProperty('gram', $fruit);
-        $this->assertObjectHasProperty('dateTimeAdded', $fruit);
+        $this->assertObjectHasProperty('createdAt', $fruit);
     }
 
     public static function invalidPageProvider(): array
