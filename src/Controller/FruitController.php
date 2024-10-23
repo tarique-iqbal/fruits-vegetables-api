@@ -23,7 +23,7 @@ final class FruitController extends AbstractApiController
     public function __construct(
         private readonly FruitServiceInterface $fruitService,
         SerializerInterface $serializer,
-        SluggerInterface $asciiSlugger
+        SluggerInterface $asciiSlugger,
     ) {
         parent::__construct($serializer, $asciiSlugger);
     }

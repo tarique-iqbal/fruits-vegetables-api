@@ -12,7 +12,7 @@ readonly class FruitProcessorService implements UnitProcessorServiceInterface
 {
     public function __construct(
         private SluggerInterface $asciiSlugger,
-        private FruitRepository $fruitRepository
+        private FruitRepository $fruitRepository,
     ) {
     }
 

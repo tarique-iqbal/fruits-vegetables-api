@@ -12,7 +12,7 @@ readonly class VegetableProcessorService implements UnitProcessorServiceInterfac
 {
     public function __construct(
         private SluggerInterface $asciiSlugger,
-        private VegetableRepository $vegetableRepository
+        private VegetableRepository $vegetableRepository,
     ) {
     }
 

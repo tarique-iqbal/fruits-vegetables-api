@@ -17,7 +17,7 @@ class ImportFruitVegetableCommand extends Command
 {
     public function __construct(
         private readonly string $projectDir,
-        private readonly UnitProcessorServiceProvider $unitProcessorProvider
+        private readonly UnitProcessorServiceProvider $unitProcessorProvider,
     ) {
         parent::__construct();
     }

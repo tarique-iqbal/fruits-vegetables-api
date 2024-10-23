@@ -19,7 +19,7 @@ final class UniqueVegetableValidator extends ConstraintValidator
     public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof UniqueVegetable) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\UniqueVegetable');
+            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\UniqueVegetable');
         }
 
         if ($value === null) {

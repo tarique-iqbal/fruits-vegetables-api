@@ -11,7 +11,7 @@ use App\Repository\VegetableRepository;
 final readonly class VegetableService implements VegetableServiceInterface
 {
     public function __construct(
-        private VegetableRepository $vegetableRepository
+        private VegetableRepository $vegetableRepository,
     ) {
     }
 

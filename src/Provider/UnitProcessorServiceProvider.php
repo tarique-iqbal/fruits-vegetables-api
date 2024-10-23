@@ -11,7 +11,7 @@ readonly class UnitProcessorServiceProvider
 {
     public function __construct(
         private iterable $unitProcessors,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {
     }
 

@@ -33,7 +33,7 @@ class FruitMapper implements MapperInterface
                 ->setName($entity->getName())
                 ->setAlias($entity->getAlias())
                 ->setGram($entity->getGram())
-                ->setKilogram(($entity->getGram() / 1000))
+                ->setKilogram($entity->getGram() / 1000)
                 ->setCreatedAt($entity->getCreatedAt());
 
             $result[] = $fruit;

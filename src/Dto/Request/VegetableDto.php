@@ -18,7 +18,7 @@ class VegetableDto
     )]
     #[Assert\Regex(
         pattern: "/[\^<,@\/\{\}\(\)\[\]\!\&\\\`\'\~\*\$%\?=>:\|;#0-9\x22]+/i",
-        message: "Special characters are not allowed in Vegetable name.",
+        message: 'Special characters are not allowed in Vegetable name.',
         match: false
     )]
     private string $name;
@@ -33,8 +33,8 @@ class VegetableDto
 
     #[Assert\NotBlank]
     #[Assert\Regex(
-        pattern: "/(g|kg)/",
-        message: "Invalid unit provided.",
+        pattern: '/(g|kg)/',
+        message: 'Invalid unit provided.',
         match: true
     )]
     private string $unit;

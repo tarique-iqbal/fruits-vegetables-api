@@ -23,7 +23,7 @@ final class VegetableController extends AbstractApiController
     public function __construct(
         private readonly VegetableServiceInterface $vegetableService,
         SerializerInterface $serializer,
-        SluggerInterface $asciiSlugger
+        SluggerInterface $asciiSlugger,
     ) {
         parent::__construct($serializer, $asciiSlugger);
     }

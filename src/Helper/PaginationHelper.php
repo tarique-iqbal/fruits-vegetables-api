@@ -33,7 +33,7 @@ class PaginationHelper extends Paginator
         );
         $pager->setLimit(self::PAGE_SIZE);
         $pager->setOffset(
-            $pager->getLimit() * ($page-1)
+            $pager->getLimit() * ($page - 1)
         );
 
         if ($pager->getTotalPages() < $pager->getCurrentPage()) {

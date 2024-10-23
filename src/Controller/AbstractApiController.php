@@ -19,7 +19,7 @@ abstract class AbstractApiController extends AbstractController
 
     public function __construct(
         private readonly SerializerInterface $serializer,
-        private readonly SluggerInterface $asciiSlugger
+        private readonly SluggerInterface $asciiSlugger,
     ) {
     }
 
