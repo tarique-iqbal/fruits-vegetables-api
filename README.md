@@ -1,4 +1,4 @@
-# 🍎 Fruits and 🥕 Vegetables
+# 🍎 Fruits and 🥕 Vegetables REST API using Symfony
 
 ## 🎯 Goal
 We want to build a service which will take a `request.json` sample file location: `data/request.json` and:
