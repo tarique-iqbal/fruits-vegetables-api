@@ -7,20 +7,21 @@ namespace App\Provider;
 use App\Service\UnitProcessor\UnitProcessorServiceInterface;
 use Psr\Log\LoggerInterface;
 
-readonly class UnitProcessorServiceProvider
+final class UnitProcessorServiceProvider
 {
+    private array $unitProcessors;
+
     public function __construct(
-        private iterable $unitProcessors,
-        private LoggerInterface $logger,
+        iterable $unitProcessors,
+        private readonly LoggerInterface $logger,
     ) {
+        $this->populateUnitProcessors($unitProcessors);
     }
 
     public function get(string $type): ?UnitProcessorServiceInterface
     {
-        foreach ($this->unitProcessors as $unitProcessor) {
-            if ($unitProcessor->isMatch($type)) {
-                return $unitProcessor;
-            }
+        if (array_key_exists($type, $this->unitProcessors)) {
+            return $this->unitProcessors[$type];
         }
 
         $this->logger->alert(
@@ -28,5 +29,12 @@ readonly class UnitProcessorServiceProvider
         );
 
         return null;
+    }
+
+    private function populateUnitProcessors(iterable $unitProcessors): void
+    {
+        foreach ($unitProcessors as $unitProcessor) {
+            $this->unitProcessors[$unitProcessor->getType()] = $unitProcessor;
+        }
     }
 }

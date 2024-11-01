@@ -6,7 +6,7 @@ namespace App\Service\UnitProcessor;
 
 interface UnitProcessorServiceInterface
 {
-    public function isMatch(string $type): bool;
+    public function getType(): string;
 
     public function process(\stdClass $object): bool;
 }

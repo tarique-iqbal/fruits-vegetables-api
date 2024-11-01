@@ -8,17 +8,19 @@ use App\Entity\Vegetable;
 use App\Repository\VegetableRepository;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-readonly class VegetableProcessorService implements UnitProcessorServiceInterface
+final readonly class VegetableProcessorService implements UnitProcessorServiceInterface
 {
+    private const TYPE = 'vegetable';
+
     public function __construct(
         private SluggerInterface $asciiSlugger,
         private VegetableRepository $vegetableRepository,
     ) {
     }
 
-    public function isMatch(string $type): bool
+    public function getType(): string
     {
-        return ($type === 'vegetable');
+        return self::TYPE;
     }
 
     public function process(\stdClass $object): bool
