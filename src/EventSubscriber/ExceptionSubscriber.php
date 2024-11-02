@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Component\Validator\Exception\AcceptanceFailedException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,6 +31,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof ValidationFailedException) {
             $message = $this->getErrorMessage($exception->getViolations());
             $statusCode = Response::HTTP_UNPROCESSABLE_ENTITY;
+        } elseif ($exception instanceof AcceptanceFailedException) {
+            $message = $this->getErrorMessage($exception->getViolations());
+            $statusCode = Response::HTTP_BAD_REQUEST;
         } elseif ($exception instanceof InvalidArgumentException) {
             $message = ['error' => $exception->getMessage()];
             $statusCode = Response::HTTP_BAD_REQUEST;

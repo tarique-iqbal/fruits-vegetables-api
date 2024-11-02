@@ -14,18 +14,19 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Webmozart\Assert\Assert;
 
 final class FruitController extends AbstractApiController
 {
     public function __construct(
-        private readonly FruitServiceInterface $fruitService,
+        ValidatorInterface $validator,
         SerializerInterface $serializer,
         SluggerInterface $asciiSlugger,
+        private readonly FruitServiceInterface $fruitService,
     ) {
-        parent::__construct($serializer, $asciiSlugger);
+        parent::__construct($validator, $serializer, $asciiSlugger);
     }
 
     protected function getDtoClassName(): string
@@ -61,8 +62,10 @@ final class FruitController extends AbstractApiController
         $page = $request->query->get('page', 1);
         $unit = $request->query->get('unit', self::DEFAULT_UNIT);
 
-        Assert::numeric($page, sprintf('Page expected to be numeric. Received: %s', $page));
-        Assert::oneOf($unit, self::UNIT_LIST, sprintf('Unit must be one of %s', implode(', ', self::UNIT_LIST)));
+        $this->validateRawValue([
+            ['page', $page, new Assert\Regex(pattern: '/^[1-9]\d*$/', match: true)],
+            ['unit', $unit, new Assert\Choice(self::UNIT_LIST)]
+        ]);
 
         $result = $this->fruitService->getPaginatedFruits((int) $page);
         $result['fruits'] = $fruitMapper->mapAllToDto($result['fruits']);

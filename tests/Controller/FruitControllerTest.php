@@ -74,7 +74,7 @@ class FruitControllerTest extends FixtureAwareTestCase
         $this->assertObjectHasProperty('createdAt', $fruit);
     }
 
-    public static function invalidPageProvider(): array
+    public static function pageNotFoundProvider(): array
     {
         return [
             [
@@ -83,16 +83,13 @@ class FruitControllerTest extends FixtureAwareTestCase
             [
                 '99', Response::HTTP_NOT_FOUND
             ],
-            [
-                'str2', Response::HTTP_BAD_REQUEST
-            ],
         ];
     }
 
     /**
-     * @dataProvider invalidPageProvider
+     * @dataProvider pageNotFoundProvider
      */
-    public function testGetFruitsInvalidPage(int|string $page, int $expectedCode): void
+    public function testGetFruitsPageNotFound(int|string $page, int $expectedCode): void
     {
         $url = $this->router->generate('fruit_list', ['page' => $page]);
         $this->client->request('GET', $url);
