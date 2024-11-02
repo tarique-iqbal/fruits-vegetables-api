@@ -101,6 +101,36 @@ class VegetableControllerTest extends FixtureAwareTestCase
         $this->assertStringContainsString((string) $page, $response->error);
     }
 
+    public static function invalidParameterProvider(): array
+    {
+        return [
+            [
+                '03', 'gram2', Response::HTTP_BAD_REQUEST
+            ],
+            [
+                'str3', 'kilogram2', Response::HTTP_BAD_REQUEST
+            ],
+            [
+                '@#^3$%', 'random', Response::HTTP_BAD_REQUEST
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidParameterProvider
+     */
+    public function testGetVegetablesInvalidParameter(string $page, string $unit, int $expectedCode): void
+    {
+        $url = $this->router->generate('vegetable_list', ['page' => $page, 'unit' => $unit]);
+        $this->client->request('GET', $url);
+
+        $statusCode = $this->client->getResponse()->getStatusCode();
+        $errors = json_decode($this->client->getResponse()->getContent());
+
+        $this->assertEquals($expectedCode, $statusCode);
+        $this->assertCount(2, $errors);
+    }
+
     public function testDeleteVegetable(): void
     {
         $url = $this->router->generate('vegetable_delete', ['id' => 1]);
