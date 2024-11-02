@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class AbstractApiController extends AbstractController
@@ -28,6 +29,15 @@ abstract class AbstractApiController extends AbstractController
     }
 
     abstract protected function getDtoClassName(): string;
+
+    protected function validateDto(FruitDto|VegetableDto $dto): void
+    {
+        $violations = $this->validator->validate($dto);
+
+        if (count($violations) > 0) {
+            throw new ValidationFailedException(null, $violations);
+        }
+    }
 
     protected function validateRawValue(array $collection): void
     {

@@ -15,7 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class VegetableController extends AbstractApiController
@@ -37,15 +36,11 @@ final class VegetableController extends AbstractApiController
     #[Route('/vegetables', name: 'vegetable_add', methods: ['POST'])]
     public function postVegetable(
         Request $request,
-        ValidatorInterface $validator,
         MapperInterface $vegetableMapper,
     ): JsonResponse {
         $vegetableDto = $this->loadDto($request);
 
-        $violations = $validator->validate($vegetableDto);
-        if (count($violations) > 0) {
-            throw new ValidationFailedException(null, $violations);
-        }
+        $this->validateDto($vegetableDto);
 
         $vegetable = $vegetableMapper->mapToEntity($vegetableDto);
 

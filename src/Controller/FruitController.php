@@ -15,7 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class FruitController extends AbstractApiController
@@ -37,15 +36,11 @@ final class FruitController extends AbstractApiController
     #[Route('/fruits', name: 'fruit_add', methods: ['POST'])]
     public function postFruit(
         Request $request,
-        ValidatorInterface $validator,
         MapperInterface $fruitMapper,
     ): JsonResponse {
         $fruitDto = $this->loadDto($request);
 
-        $violations = $validator->validate($fruitDto);
-        if (count($violations) > 0) {
-            throw new ValidationFailedException(null, $violations);
-        }
+        $this->validateDto($fruitDto);
 
         $fruit = $fruitMapper->mapToEntity($fruitDto);
 
