@@ -8,13 +8,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 class VegetableDto
 {
-    #[Groups(['gram', 'kilogram'])]
+    #[Groups(['list'])]
     private int $id;
 
-    #[Groups(['gram', 'kilogram'])]
+    #[Groups(['list'])]
     private string $name;
 
-    #[Groups(['gram', 'kilogram'])]
+    #[Groups(['list'])]
     private string $alias;
 
     #[Groups(['gram'])]
@@ -23,7 +23,7 @@ class VegetableDto
     #[Groups(['kilogram'])]
     private float $kilogram;
 
-    #[Groups(['gram', 'kilogram'])]
+    #[Groups(['list'])]
     private \DateTimeInterface $createdAt;
 
     public function getId(): int
