@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Command;
 
+use App\Component\Validator\Exception\AcceptanceFailedException;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Webmozart\Assert\InvalidArgumentException;
 
 class ImportFruitVegetableCommandTest extends KernelTestCase
 {
@@ -31,10 +31,21 @@ class ImportFruitVegetableCommandTest extends KernelTestCase
         $this->assertStringContainsString('app:import-fruit-vegetable', $output);
     }
 
-    public function testExecuteFileNotFound(): void
+    public static function invalidFileProvider(): array
     {
-        $this->expectException(InvalidArgumentException::class);
+        return [
+            ['random/path/fake.json'],
+            ['tests/data/request.fake'],
+        ];
+    }
 
-        $this->commandTester->execute(['file' => 'tests/data/fake.json']);
+    /**
+     * @dataProvider invalidFileProvider
+     */
+    public function testExecuteInvalidFile(string $file): void
+    {
+        $this->expectException(AcceptanceFailedException::class);
+
+        $this->commandTester->execute(['file' => $file]);
     }
 }

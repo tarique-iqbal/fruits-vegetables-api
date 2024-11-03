@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Component\Validator\Constraints as AppAssert;
 use App\Provider\UnitProcessorServiceProvider;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Webmozart\Assert\Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsCommand(name: 'app:import-fruit-vegetable')]
-class ImportFruitVegetableCommand extends Command
+class ImportFruitVegetableCommand extends AbstractUniqueCommand
 {
     public function __construct(
+        ValidatorInterface $validator,
         private readonly string $projectDir,
         private readonly UnitProcessorServiceProvider $unitProcessorProvider,
     ) {
-        parent::__construct();
+        parent::__construct($validator);
     }
 
     protected function configure(): void
@@ -31,14 +32,14 @@ class ImportFruitVegetableCommand extends Command
     /**
      * @throws \JsonException
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function perform(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(sprintf('Start command: %s', $this->getName()));
-
         $file = $this->projectDir . '/' . $input->getArgument('file');
 
-        Assert::fileExists($file, sprintf('File "%s" not found.', $file));
-        Assert::endsWith($file, '.json', 'Invalid file extension.');
+        $this->validateRawValue([
+            ['file', $file, [new AppAssert\FileExists(), new AppAssert\FileExtension('json')]]
+        ]);
 
         $fruitsVegetables = json_decode(
             file_get_contents($file),
