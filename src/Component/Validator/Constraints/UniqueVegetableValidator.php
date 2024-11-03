@@ -19,17 +19,17 @@ final class UniqueVegetableValidator extends ConstraintValidator
     public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof UniqueVegetable) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__ . '\UniqueVegetable');
+            throw new UnexpectedTypeException($constraint, UniqueVegetable::class);
         }
 
-        if ($value === null) {
+        if ($value === null || $value === '') {
             return;
         }
 
-        $user = $this->entityManager->getRepository(Vegetable::class)
+        $vegetable = $this->entityManager->getRepository(Vegetable::class)
             ->findOneBy(['alias' => $value]);
 
-        if ($user !== null) {
+        if ($vegetable !== null) {
             $this->context->buildViolation($constraint->message)
                 ->setCode(UniqueVegetable::NOT_UNIQUE_ERROR)
                 ->addViolation();
