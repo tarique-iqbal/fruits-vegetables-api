@@ -6,6 +6,7 @@ namespace App\Service\UnitProcessor;
 
 use App\Entity\Vegetable;
 use App\Repository\VegetableRepository;
+use App\Utility\Utility;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 final readonly class VegetableProcessorService implements UnitProcessorServiceInterface
@@ -34,9 +35,7 @@ final readonly class VegetableProcessorService implements UnitProcessorServiceIn
             return false;
         }
 
-        $gram = $object->unit === 'kg' ?
-            $object->quantity * 1000 :
-            $object->quantity;
+        $gram = Utility::convertToGram($object->unit, $object->quantity);
 
         $vegetable = new vegetable();
         $vegetable->setName($object->name)

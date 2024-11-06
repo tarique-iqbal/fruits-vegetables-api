@@ -6,14 +6,13 @@ namespace App\Mapper;
 
 use App\Dto\Response\FruitDto;
 use App\Entity\Fruit;
+use App\Utility\Utility;
 
 class FruitMapper implements MapperInterface
 {
     public function mapToEntity(object $dto): Fruit
     {
-        $gram = $dto->getUnit() === 'kg' ?
-            $dto->getQuantity() * 1000 :
-            $dto->getQuantity();
+        $gram = Utility::convertToGram($dto->getUnit(), $dto->getQuantity());
 
         $fruit = new Fruit();
         $fruit->setName($dto->getName())

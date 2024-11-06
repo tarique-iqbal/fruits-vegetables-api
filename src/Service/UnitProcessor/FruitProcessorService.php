@@ -6,6 +6,7 @@ namespace App\Service\UnitProcessor;
 
 use App\Entity\Fruit;
 use App\Repository\FruitRepository;
+use App\Utility\Utility;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 final readonly class FruitProcessorService implements UnitProcessorServiceInterface
@@ -34,9 +35,7 @@ final readonly class FruitProcessorService implements UnitProcessorServiceInterf
             return false;
         }
 
-        $gram = $object->unit === 'kg' ?
-            $object->quantity * 1000 :
-            $object->quantity;
+        $gram = Utility::convertToGram($object->unit, $object->quantity);
 
         $fruit = new Fruit();
         $fruit->setName($object->name)
