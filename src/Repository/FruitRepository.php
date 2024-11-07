@@ -31,6 +31,11 @@ class FruitRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
+    public function existsByAlias(string $alias): bool
+    {
+        return $this->findOneBy(['alias' => $alias]) instanceof Fruit;
+    }
+
     public function getQuery(): Query
     {
         return $this->createQueryBuilder('f')
