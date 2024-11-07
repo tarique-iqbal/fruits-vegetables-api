@@ -29,9 +29,8 @@ final readonly class FruitProcessorService implements UnitProcessorServiceInterf
         $alias = $this->asciiSlugger->slug($object->name)
             ->lower()
             ->toString();
-        $fruit = $this->fruitRepository->findOneBy(['alias' => $alias]);
 
-        if ($fruit instanceof Fruit) {
+        if ($this->fruitRepository->existsByAlias($alias)) {
             return false;
         }
 

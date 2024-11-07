@@ -29,9 +29,8 @@ final readonly class VegetableProcessorService implements UnitProcessorServiceIn
         $alias = $this->asciiSlugger->slug($object->name)
             ->lower()
             ->toString();
-        $vegetable = $this->vegetableRepository->findOneBy(['alias' => $alias]);
 
-        if ($vegetable instanceof vegetable) {
+        if ($this->vegetableRepository->existsByAlias($alias)) {
             return false;
         }
 
