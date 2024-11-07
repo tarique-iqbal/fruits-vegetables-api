@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Component\Validator\Constraints;
 
-use App\Entity\Fruit;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\FruitRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 final class UniqueFruitValidator extends ConstraintValidator
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private readonly FruitRepository $fruitRepository)
     {
     }
 
@@ -26,10 +25,7 @@ final class UniqueFruitValidator extends ConstraintValidator
             return;
         }
 
-        $fruit = $this->entityManager->getRepository(Fruit::class)
-            ->findOneBy(['alias' => $value]);
-
-        if ($fruit !== null) {
+        if ($this->fruitRepository->existsByAlias($value)) {
             $this->context->buildViolation($constraint->message)
                 ->setCode(UniqueFruit::NOT_UNIQUE_ERROR)
                 ->addViolation();
