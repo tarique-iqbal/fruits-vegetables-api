@@ -27,6 +27,7 @@ final class UniqueFruitValidator extends ConstraintValidator
 
         if ($this->fruitRepository->existsByAlias($value)) {
             $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ value }}', $value)
                 ->setCode(UniqueFruit::NOT_UNIQUE_ERROR)
                 ->addViolation();
         }
