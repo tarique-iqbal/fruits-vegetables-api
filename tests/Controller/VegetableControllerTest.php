@@ -4,22 +4,28 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Tests\FixtureTest\FixtureAwareTestCase;
+use App\Tests\DataFixtures\VegetableFixtures;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
-class VegetableControllerTest extends FixtureAwareTestCase
+class VegetableControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
+
     protected RouterInterface $router;
 
     public function setUp(): void
     {
         $this->client = static::createClient();
-        $this->router = $this->getContainer()->get('router');
+        $container = static::getContainer();
+        $this->router = $container->get('router');
 
-        parent::setUp();
+        $container->get(DatabaseToolCollection::class)
+            ->get()
+            ->loadFixtures([VegetableFixtures::class]);
     }
 
     public function testPostVegetable(): void
