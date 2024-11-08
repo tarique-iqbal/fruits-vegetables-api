@@ -27,6 +27,7 @@ final class UniqueVegetableValidator extends ConstraintValidator
 
         if ($this->vegetableRepository->existsByAlias($value)) {
             $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ value }}', $value)
                 ->setCode(UniqueVegetable::NOT_UNIQUE_ERROR)
                 ->addViolation();
         }
