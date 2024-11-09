@@ -25,6 +25,17 @@
         "symfony/validator": "6.4.*",
         "symfony/yaml": "6.4.*"
     },
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
+        "liip/test-fixtures-bundle": "^3.1",
+        "mikey179/vfsstream": "^1.6",
+        "phpunit/phpunit": "^9.5",
+        "squizlabs/php_codesniffer": "^3.10",
+        "symfony/browser-kit": "6.4.*",
+        "symfony/css-selector": "6.4.*",
+        "symfony/maker-bundle": "^1.60",
+        "symfony/phpunit-bridge": "^7.1"
+    },
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,
@@ -72,15 +83,5 @@
             "allow-contrib": false,
             "require": "6.4.*"
         }
-    },
-    "require-dev": {
-        "doctrine/doctrine-fixtures-bundle": "^3.6",
-        "liip/test-fixtures-bundle": "^3.1",
-        "phpunit/phpunit": "^9.5",
-        "squizlabs/php_codesniffer": "^3.10",
-        "symfony/browser-kit": "6.4.*",
-        "symfony/css-selector": "6.4.*",
-        "symfony/maker-bundle": "^1.60",
-        "symfony/phpunit-bridge": "^7.1"
     }
 }
