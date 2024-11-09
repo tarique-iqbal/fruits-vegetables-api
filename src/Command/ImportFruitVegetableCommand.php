@@ -17,7 +17,6 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
 {
     public function __construct(
         ValidatorInterface $validator,
-        private readonly string $projectDir,
         private readonly UnitProcessorServiceProvider $unitProcessorProvider,
     ) {
         parent::__construct($validator);
@@ -35,7 +34,7 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
     protected function perform(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(sprintf('Start command: %s', $this->getName()));
-        $file = $this->projectDir . '/' . $input->getArgument('file');
+        $file = $input->getArgument('file');
 
         $this->validateRawValue([
             ['file', $file, [new AppAssert\FileExists(), new AppAssert\FileExtension(['json'])]]
