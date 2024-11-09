@@ -27,12 +27,12 @@ class FileExtensionValidator extends ConstraintValidator
 
         $extension = pathinfo($value, PATHINFO_EXTENSION);
 
-        if ($constraint->extension === $extension) {
+        if (in_array($extension, $constraint->allowedExtensions)) {
             return;
         }
 
         $this->context->buildViolation($constraint->message)
-            ->setParameter('{{ extension }}', $constraint->extension)
+            ->setParameter('{{ extension }}', implode(', ', $constraint->allowedExtensions))
             ->setParameter('{{ received }}', $extension)
             ->addViolation();
     }

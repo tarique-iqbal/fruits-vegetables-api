@@ -38,7 +38,7 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
         $file = $this->projectDir . '/' . $input->getArgument('file');
 
         $this->validateRawValue([
-            ['file', $file, [new AppAssert\FileExists(), new AppAssert\FileExtension('json')]]
+            ['file', $file, [new AppAssert\FileExists(), new AppAssert\FileExtension(['json'])]]
         ]);
 
         $fruitsVegetables = json_decode(

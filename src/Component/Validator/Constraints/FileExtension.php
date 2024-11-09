@@ -11,17 +11,17 @@ class FileExtension extends Constraint
 {
     public string $message = 'Expected file extension to be {{ extension }}, received: {{ received }}';
 
-    public string $extension;
+    public array $allowedExtensions;
 
     public function __construct(
-        string $extension,
+        array $allowedExtensions,
         ?string $message = null,
         ?array $groups = null,
         $payload = null,
     ) {
         parent::__construct([], $groups, $payload);
 
-        $this->extension = $extension;
+        $this->allowedExtensions = $allowedExtensions;
         $this->message = $message ?? $this->message;
     }
 }
