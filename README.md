@@ -19,6 +19,33 @@ Json file loaded via Symfony Console Command
 bin/console app:import-fruit-vegetable path/file.json
 ```
 
+## Routes
+`POST /api/fruits`
+```json
+{
+  "name": "Apples",
+  "quantity": 20,
+  "unit": "kg"
+}
+```
+
+`GET /api/fruits | /api/fruits?page=2 | /api/fruits?page=2&unit=kilogram`
+
+`DELETE /api/fruits/{id}`
+
+`POST /api/vegetables`
+```json
+{
+  "name": "Carrot",
+  "quantity": 10922,
+  "unit": "g"
+}
+```
+
+`GET /api/vegetables | /api/vegetables?page=2 | /api/vegetables?page=2&unit=kilogram`
+
+`DELETE /api/vegetables/{id}`
+
 ## Running the tests
 ```shell
 $ cd /path/to/base/directory
