@@ -52,14 +52,11 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
                 ->get($object->type)
                 ?->process($object);
 
-            if ($status === true) {
-                $output->writeln(
-                    sprintf('Successfully added %s: %s', $object->type, $object->name)
-                );
-            } elseif ($status === false) {
-                $output->writeln(
-                    sprintf('Duplicate %s: %s! Exists in database.', $object->type, $object->name)
-                );
+            if ($status !== null) {
+                $message = ($status === true) ?
+                    sprintf('Successfully added %s: %s', $object->type, $object->name) :
+                    sprintf('Duplicate %s: %s! Exists in database.', $object->type, $object->name);
+                $output->writeln($message);
             }
         }
 
