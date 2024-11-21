@@ -37,10 +37,10 @@ class FruitControllerTest extends WebTestCase
             content: '{"name": "Kiwi","type": "fruit","quantity": 10,"unit": "kg"}'
         );
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
         $fruit = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals(Response::HTTP_CREATED, $statusCode);
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
         $this->assertObjectHasProperty('name', $fruit);
         $this->assertObjectHasProperty('alias', $fruit);
         $this->assertObjectHasProperty('gram', $fruit);
@@ -56,10 +56,9 @@ class FruitControllerTest extends WebTestCase
             content: '{"name": "","type": "fruit","quantity": 0,"unit": "lb"}'
         );
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
         $errors = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals(Response::HTTP_UNPROCESSABLE_ENTITY, $statusCode);
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertCount(5, $errors);
         $this->assertContainsOnlyInstancesOf(\stdClass::class, $errors);
     }
@@ -69,11 +68,11 @@ class FruitControllerTest extends WebTestCase
         $url = $this->router->generate('fruit_list');
         $this->client->request('GET', $url);
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
         $fruit = $response->fruits[0];
 
-        $this->assertEquals(Response::HTTP_OK, $statusCode);
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
         $this->assertObjectHasProperty('name', $fruit);
         $this->assertObjectHasProperty('alias', $fruit);
         $this->assertObjectHasProperty('gram', $fruit);
@@ -100,10 +99,9 @@ class FruitControllerTest extends WebTestCase
         $url = $this->router->generate('fruit_list', ['page' => $page]);
         $this->client->request('GET', $url);
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals($expectedCode, $statusCode);
+        $this->assertResponseStatusCodeSame($expectedCode);
         $this->assertStringContainsString((string) $page, $response->error);
     }
 
@@ -130,10 +128,9 @@ class FruitControllerTest extends WebTestCase
         $url = $this->router->generate('fruit_list', ['page' => $page, 'unit' => $unit]);
         $this->client->request('GET', $url);
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
         $errors = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals($expectedCode, $statusCode);
+        $this->assertResponseStatusCodeSame($expectedCode);
         $this->assertCount(2, $errors);
     }
 
@@ -142,10 +139,10 @@ class FruitControllerTest extends WebTestCase
         $url = $this->router->generate('fruit_delete', ['id' => 1]);
         $this->client->request('DELETE', $url);
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
         $response = json_decode($this->client->getResponse()->getContent());
 
-        $this->assertEquals(Response::HTTP_NO_CONTENT, $statusCode);
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
         $this->assertNull($response);
     }
 
@@ -154,8 +151,6 @@ class FruitControllerTest extends WebTestCase
         $url = $this->router->generate('fruit_delete', ['id' => 0]);
         $this->client->request('DELETE', $url);
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertEquals(Response::HTTP_NOT_FOUND, $statusCode);
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 }
