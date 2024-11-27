@@ -11,6 +11,7 @@ use App\Repository\FruitRepository;
 final readonly class FruitService implements FruitServiceInterface
 {
     public function __construct(
+        private int $fruitsPerPage,
         private FruitRepository $fruitRepository
     ) {
     }
@@ -33,7 +34,9 @@ final readonly class FruitService implements FruitServiceInterface
     public function getPaginatedFruits(int $page): array
     {
         $query = $this->fruitRepository->getQuery();
-        $pager = (new PaginationHelper($query))->paginate($page);
+
+        $pager = (new PaginationHelper($query))->paginate($page, $this->fruitsPerPage);
+
         $fruits = $this->fruitRepository->getPaginatedResult($query, $pager->getOffset(), $pager->getLimit());
 
         return [

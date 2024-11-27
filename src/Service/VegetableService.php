@@ -11,6 +11,7 @@ use App\Repository\VegetableRepository;
 final readonly class VegetableService implements VegetableServiceInterface
 {
     public function __construct(
+        private int $vegetablesPerPage,
         private VegetableRepository $vegetableRepository,
     ) {
     }
@@ -33,7 +34,9 @@ final readonly class VegetableService implements VegetableServiceInterface
     public function getPaginatedVegetables(int $page): array
     {
         $query = $this->vegetableRepository->getQuery();
-        $pager = (new PaginationHelper($query))->paginate($page);
+
+        $pager = (new PaginationHelper($query))->paginate($page, $this->vegetablesPerPage);
+
         $vegetables = $this->vegetableRepository->getPaginatedResult($query, $pager->getOffset(), $pager->getLimit());
 
         return [

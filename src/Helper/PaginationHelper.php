@@ -10,19 +10,17 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PaginationHelper extends Paginator
 {
-    private const PAGE_SIZE = 4;
-
     public function __construct(Query $query)
     {
         parent::__construct($query);
     }
 
-    public function paginate(int $page): Pager
+    public function paginate(int $page, int $pageSize): Pager
     {
         $pager = new Pager();
         $pager->setTotalItems($this->count());
         $pager->setTotalPages(
-            (int) ceil($pager->getTotalItems() / self::PAGE_SIZE)
+            (int) ceil($pager->getTotalItems() / $pageSize)
         );
         $pager->setCurrentPage($page);
         $pager->setPreviousPage(
@@ -31,7 +29,7 @@ class PaginationHelper extends Paginator
         $pager->setNextPage(
             $page < $pager->getTotalPages() ? $page + 1 : null
         );
-        $pager->setLimit(self::PAGE_SIZE);
+        $pager->setLimit($pageSize);
         $pager->setOffset(
             $pager->getLimit() * ($page - 1)
         );
