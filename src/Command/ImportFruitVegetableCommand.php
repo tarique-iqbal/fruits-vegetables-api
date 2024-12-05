@@ -6,20 +6,20 @@ namespace App\Command;
 
 use App\Component\Validator\Constraints as AppAssert;
 use App\Provider\UnitProcessorServiceProvider;
+use App\Service\ValidationServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsCommand(name: 'app:import-fruit-vegetable')]
 class ImportFruitVegetableCommand extends AbstractUniqueCommand
 {
     public function __construct(
-        ValidatorInterface $validator,
+        private readonly ValidationServiceInterface $validationService,
         private readonly UnitProcessorServiceProvider $unitProcessorProvider,
     ) {
-        parent::__construct($validator);
+        parent::__construct();
     }
 
     protected function configure(): void
@@ -36,7 +36,7 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
         $output->writeln(sprintf('Start command: %s', $this->getName()));
         $file = $input->getArgument('file');
 
-        $this->validateRawValue([
+        $this->validationService->validateRawValue([
             ['file', $file, [new AppAssert\FileExists(), new AppAssert\FileExtension(['json'])]]
         ]);
 

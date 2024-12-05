@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Dto\Request\FruitDto;
 use App\Mapper\MapperInterface;
 use App\Service\FruitServiceInterface;
+use App\Service\ValidationServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,17 +16,16 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class FruitController extends AbstractApiController
 {
     public function __construct(
-        ValidatorInterface $validator,
         SerializerInterface $serializer,
         SluggerInterface $asciiSlugger,
+        private readonly ValidationServiceInterface $validationService,
         private readonly FruitServiceInterface $fruitService,
     ) {
-        parent::__construct($validator, $serializer, $asciiSlugger);
+        parent::__construct($serializer, $asciiSlugger);
     }
 
     protected function getDtoClassName(): string
@@ -40,7 +40,7 @@ final class FruitController extends AbstractApiController
     ): JsonResponse {
         $fruitDto = $this->loadDto($request);
 
-        $this->validateDto($fruitDto);
+        $this->validationService->validate($fruitDto);
 
         $fruit = $fruitMapper->mapToEntity($fruitDto);
 
@@ -57,7 +57,7 @@ final class FruitController extends AbstractApiController
         $page = $request->query->get('page', 1);
         $unit = $request->query->get('unit', self::DEFAULT_UNIT);
 
-        $this->validateRawValue([
+        $this->validationService->validateRawValue([
             ['page', $page, new Assert\Regex(pattern: '/^[1-9]\d*$/', match: true)],
             ['unit', $unit, new Assert\Choice(self::UNIT_LIST)]
         ]);
