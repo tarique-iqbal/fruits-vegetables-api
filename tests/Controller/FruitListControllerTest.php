@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
-class FruitControllerTest extends WebTestCase
+class FruitListControllerTest extends WebTestCase
 {
     protected KernelBrowser $client;
 
@@ -26,41 +26,6 @@ class FruitControllerTest extends WebTestCase
         $container->get(DatabaseToolCollection::class)
             ->get()
             ->loadFixtures([FruitFixtures::class]);
-    }
-
-    public function testPostFruit(): void
-    {
-        $url = $this->router->generate('fruit_add');
-        $this->client->request(
-            'POST',
-            uri: $url,
-            content: '{"name": "Kiwi","type": "fruit","quantity": 10,"unit": "kg"}'
-        );
-
-        $fruit = json_decode($this->client->getResponse()->getContent());
-
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
-        $this->assertObjectHasProperty('name', $fruit);
-        $this->assertObjectHasProperty('alias', $fruit);
-        $this->assertObjectHasProperty('gram', $fruit);
-        $this->assertObjectHasProperty('createdAt', $fruit);
-    }
-
-    public function testPostFruitInvalidInput(): void
-    {
-        $url = $this->router->generate('fruit_add');
-        $this->client->request(
-            'POST',
-            uri: $url,
-            content: '{"name": "","type": "fruit","quantity": 0,"unit": "lb"}'
-        );
-
-        $errors = json_decode($this->client->getResponse()->getContent());
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $this->assertCount(5, $errors);
-        $this->assertContainsOnlyInstancesOf(\stdClass::class, $errors);
     }
 
     public function testGetFruits(): void
@@ -132,25 +97,5 @@ class FruitControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame($expectedCode);
         $this->assertCount(2, $errors);
-    }
-
-    public function testDeleteFruit(): void
-    {
-        $url = $this->router->generate('fruit_delete', ['id' => 1]);
-        $this->client->request('DELETE', $url);
-
-        $response = json_decode($this->client->getResponse()->getContent());
-
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
-        $this->assertNull($response);
-    }
-
-    public function testDeleteFruitNotFound(): void
-    {
-        $url = $this->router->generate('fruit_delete', ['id' => 0]);
-        $this->client->request('DELETE', $url);
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 }
