@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Mapper\MapperInterface;
-use App\Service\FruitServiceInterface;
 use App\Service\ValidationServiceInterface;
+use App\Service\VegetableServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class FruitListController extends AbstractController
+final class VegetableListController extends AbstractController
 {
     private const DEFAULT_UNIT = 'gram';
 
@@ -22,12 +22,12 @@ final class FruitListController extends AbstractController
 
     public function __construct(
         private readonly ValidationServiceInterface $validationService,
-        private readonly FruitServiceInterface $fruitService,
-        private readonly MapperInterface $fruitMapper,
+        private readonly VegetableServiceInterface $vegetableService,
+        private readonly MapperInterface $vegetableMapper,
     ) {
     }
 
-    #[Route('/fruits', name: 'fruit_list', methods: ['GET'])]
+    #[Route('/vegetables', name: 'vegetable_list', methods: ['GET'])]
     public function __invoke(Request $request): JsonResponse
     {
         $page = $request->query->get('page', 1);
@@ -38,8 +38,8 @@ final class FruitListController extends AbstractController
             ['unit', $unit, new Assert\Choice(self::UNIT_LIST)]
         ]);
 
-        $result = $this->fruitService->getPaginatedFruits((int) $page);
-        $result['fruits'] = $this->fruitMapper->mapAllToDto($result['fruits']);
+        $result = $this->vegetableService->getPaginatedVegetables((int) $page);
+        $result['vegetables'] = $this->vegetableMapper->mapAllToDto($result['vegetables']);
 
         return $this->json(
             data: $result,

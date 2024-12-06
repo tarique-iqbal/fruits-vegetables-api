@@ -13,10 +13,6 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 abstract class AbstractApiController extends AbstractController
 {
-    protected const DEFAULT_UNIT = 'gram';
-
-    protected const UNIT_LIST = ['gram', 'kilogram'];
-
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly SluggerInterface $asciiSlugger,
