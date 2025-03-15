@@ -7,7 +7,9 @@ namespace App\Command;
 use App\Component\Validator\Constraints as AppAssert;
 use App\Provider\UnitProcessorServiceProvider;
 use App\Service\ValidationServiceInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,6 +20,7 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
     public function __construct(
         private readonly ValidationServiceInterface $validationService,
         private readonly UnitProcessorServiceProvider $unitProcessorProvider,
+        private readonly LoggerInterface $logger,
     ) {
         parent::__construct();
     }
@@ -47,20 +50,33 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
             JSON_THROW_ON_ERROR
         );
 
-        foreach ($fruitsVegetables as $object) {
-            $status = $this->unitProcessorProvider
-                ->get($object->type)
-                ?->process($object);
+        $progressBar = new ProgressBar($output, count($fruitsVegetables));
+        $progressBar->start();
 
-            if ($status !== null) {
-                $message = ($status === true) ?
-                    sprintf('Successfully added %s: %s', $object->type, $object->name) :
-                    sprintf('Duplicate %s: %s! Exists in database.', $object->type, $object->name);
-                $output->writeln($message);
+        $unitProcessors = $this->unitProcessorProvider->getAll();
+
+        foreach ($fruitsVegetables as $object) {
+            if (array_key_exists($object->type, $unitProcessors)) {
+                $unitProcessor = $unitProcessors[$object->type];
+
+                $status = $unitProcessor->process($object);
+
+                if ($status === false) {
+                    $this->logger->warning(
+                        sprintf('Duplicate entry: %s %s!', $object->type, $object->name)
+                    );
+                }
+            } else {
+                $this->logger->alert(
+                    sprintf('Unit processor type "%s" not found.', $object->type)
+                );
             }
+
+            $progressBar->advance();
         }
 
-        $output->writeln(sprintf('Exit command: %s', $this->getName()));
+        $progressBar->finish();
+        $output->writeln(sprintf('%sExit command: %s', PHP_EOL, $this->getName()));
 
         return self::SUCCESS;
     }

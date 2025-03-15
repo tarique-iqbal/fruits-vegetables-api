@@ -20,43 +20,16 @@ class UnitProcessorServiceProviderTest extends KernelTestCase
         $this->unitProcessorServiceProvider = $container->get(UnitProcessorServiceProvider::class);
     }
 
-    public static function typeProvider(): array
+    public function testGet(): void
     {
-        return [
-            [
-                'fruit', FruitProcessorService::class
-            ],
-            [
-                'vegetable', VegetableProcessorService::class
-            ],
+        $expectedClasses = [
+            'fruit' => FruitProcessorService::class,
+            'vegetable' => VegetableProcessorService::class,
         ];
-    }
+        $unitProcessors = $this->unitProcessorServiceProvider->getAll();
 
-    /**
-     * @dataProvider typeProvider
-     */
-    public function testGet(string $type, $expectedClass): void
-    {
-        $unitProcessor = $this->unitProcessorServiceProvider->get($type);
-
-        $this->assertInstanceOf($expectedClass, $unitProcessor);
-    }
-
-    public static function invalidTypeProvider(): array
-    {
-        return [
-            ['fake'],
-            ['random'],
-        ];
-    }
-
-    /**
-     * @dataProvider invalidTypeProvider
-     */
-    public function testGetInvalidType(string $type): void
-    {
-        $unitProcessor = $this->unitProcessorServiceProvider->get($type);
-
-        $this->assertNull($unitProcessor);
+        foreach ($expectedClasses as $key => $expectedClass) {
+            $this->assertInstanceOf($expectedClass, $unitProcessors[$key]);
+        }
     }
 }
