@@ -7,6 +7,7 @@ namespace App\Service\UnitProcessor;
 use App\Entity\Vegetable;
 use App\Repository\VegetableRepository;
 use App\Utility\Utility;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 final readonly class VegetableProcessorService implements UnitProcessorServiceInterface
@@ -16,6 +17,7 @@ final readonly class VegetableProcessorService implements UnitProcessorServiceIn
     public function __construct(
         private SluggerInterface $asciiSlugger,
         private VegetableRepository $vegetableRepository,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -24,7 +26,7 @@ final readonly class VegetableProcessorService implements UnitProcessorServiceIn
         return self::TYPE;
     }
 
-    public function process(\stdClass $object): bool
+    public function process(\stdClass $object, bool $isFlush): bool
     {
         $alias = $this->asciiSlugger->slug($object->name)
             ->lower()
@@ -41,8 +43,19 @@ final readonly class VegetableProcessorService implements UnitProcessorServiceIn
             ->setAlias($alias)
             ->setGram($gram);
 
-        $this->vegetableRepository->add($vegetable);
+        $this->entityManager->persist($vegetable);
+
+        if ($isFlush) {
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+        }
 
         return true;
+    }
+
+    public function flush(): void
+    {
+        $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 }

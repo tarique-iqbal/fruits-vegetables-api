@@ -7,6 +7,7 @@ namespace App\Service\UnitProcessor;
 use App\Entity\Fruit;
 use App\Repository\FruitRepository;
 use App\Utility\Utility;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 final readonly class FruitProcessorService implements UnitProcessorServiceInterface
@@ -16,6 +17,7 @@ final readonly class FruitProcessorService implements UnitProcessorServiceInterf
     public function __construct(
         private SluggerInterface $asciiSlugger,
         private FruitRepository $fruitRepository,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -24,7 +26,7 @@ final readonly class FruitProcessorService implements UnitProcessorServiceInterf
         return self::TYPE;
     }
 
-    public function process(\stdClass $object): bool
+    public function process(\stdClass $object, bool $isFlush): bool
     {
         $alias = $this->asciiSlugger->slug($object->name)
             ->lower()
@@ -41,8 +43,19 @@ final readonly class FruitProcessorService implements UnitProcessorServiceInterf
             ->setAlias($alias)
             ->setGram($gram);
 
-        $this->fruitRepository->add($fruit);
+        $this->entityManager->persist($fruit);
+
+        if ($isFlush) {
+            $this->entityManager->flush();
+            $this->entityManager->clear();
+        }
 
         return true;
+    }
+
+    public function flush(): void
+    {
+        $this->entityManager->flush();
+        $this->entityManager->clear();
     }
 }

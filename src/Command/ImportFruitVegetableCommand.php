@@ -17,6 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(name: 'app:import-fruit-vegetable')]
 class ImportFruitVegetableCommand extends AbstractUniqueCommand
 {
+    private const BATCH_SIZE = 100;
+
     public function __construct(
         private readonly ValidationServiceInterface $validationService,
         private readonly UnitProcessorServiceProvider $unitProcessorProvider,
@@ -55,17 +57,21 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
 
         $unitProcessors = $this->unitProcessorProvider->getAll();
 
+        $counter = 1;
         foreach ($fruitsVegetables as $object) {
             if (array_key_exists($object->type, $unitProcessors)) {
                 $unitProcessor = $unitProcessors[$object->type];
 
-                $status = $unitProcessor->process($object);
+                $isFlush = $counter % self::BATCH_SIZE === 0;
+                $status = $unitProcessor->process($object, $isFlush);
 
                 if ($status === false) {
                     $this->logger->warning(
                         sprintf('Duplicate entry: %s %s!', $object->type, $object->name)
                     );
                 }
+
+                $counter++;
             } else {
                 $this->logger->alert(
                     sprintf('Unit processor type "%s" not found.', $object->type)
@@ -74,6 +80,8 @@ class ImportFruitVegetableCommand extends AbstractUniqueCommand
 
             $progressBar->advance();
         }
+
+        current($unitProcessors)->flush();
 
         $progressBar->finish();
         $output->writeln(sprintf('%sExit command: %s', PHP_EOL, $this->getName()));

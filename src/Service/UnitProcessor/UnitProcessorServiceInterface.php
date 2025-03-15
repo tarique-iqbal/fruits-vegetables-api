@@ -8,5 +8,7 @@ interface UnitProcessorServiceInterface
 {
     public function getType(): string;
 
-    public function process(\stdClass $object): bool;
+    public function process(\stdClass $object, bool $isFlush): bool;
+
+    public function flush(): void;
 }

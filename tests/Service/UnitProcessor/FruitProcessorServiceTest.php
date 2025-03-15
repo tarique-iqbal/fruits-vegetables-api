@@ -27,7 +27,7 @@ class FruitProcessorServiceTest extends KernelTestCase
     public function testProcess(): void
     {
         $object = json_decode('{"id":18,"name":"Kiwi","type":"fruit","quantity":10,"unit":"kg"}');
-        $status = $this->fruitProcessorService->process($object);
+        $status = $this->fruitProcessorService->process($object, true);
 
         $this->assertTrue($status);
     }
@@ -35,7 +35,7 @@ class FruitProcessorServiceTest extends KernelTestCase
     public function testProcessFruitExistInDatabase(): void
     {
         $object = json_decode('{"id":2,"name":"Apples","type":"fruit","quantity":20,"unit":"kg"}');
-        $status = $this->fruitProcessorService->process($object);
+        $status = $this->fruitProcessorService->process($object, false);
 
         $this->assertFalse($status);
     }
