@@ -1,0 +1,54 @@
+version: '3.3'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: .docker/php/Dockerfile
+    container_name: food_api
+    working_dir: /var/www/food
+    volumes:
+      - .:/var/www/food
+    environment:
+      PHP_IDE_CONFIG: "serverName=food_docker"
+      XDEBUG_MODE: "debug"
+      XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003"
+    networks:
+      - food_network
+    depends_on:
+      - mysql
+
+  nginx:
+    build:
+      context: .docker/nginx
+    container_name: food_nginx
+    volumes:
+      - .:/var/www/food
+    ports:
+      - "8080:80"
+    depends_on:
+      - php
+    networks:
+      - food_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: food_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: food
+      MYSQL_USER: local
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - food_network
+
+networks:
+  food_network:
+
+volumes:
+  mysql_data:
