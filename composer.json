@@ -27,6 +27,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.6",
+        "friendsofphp/php-cs-fixer": "^3.66",
         "liip/test-fixtures-bundle": "^3.1",
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^9.5",
