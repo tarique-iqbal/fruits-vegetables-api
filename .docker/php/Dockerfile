@@ -17,7 +17,7 @@ COPY .docker/php/symfony.ini /usr/local/etc/php/conf.d/
 COPY .docker/php/xdebug.ini /usr/local/etc/php/conf.d/
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
 # Copy Composer files first (to leverage Docker caching)
 COPY composer.json composer.lock /var/www/food/
